@@ -1,7 +1,7 @@
 
 # ncplot - Automatic interactive plotting of NetCDF files in Python 
 
-An easy to use Python (3.6 and above) package for quickly plotting the contents of NetCDF files. 
+An easy to use Python (3.6 and above) package for quickly plotting the contents of NetCDF files or xarray datasets. 
 
 
 ## Installation
@@ -66,6 +66,8 @@ ncplot("example.nc", vars)
 ```
 
 where vars is a string representing a variable or a list of variables.
+
+
 
 
 
