@@ -1,11 +1,4 @@
 
-<!-- README.md is generated from README.Rmd. Please edit that file -->
-
-
-
-
-
-
 # ncplot - Automatic interactive plotting of NetCDF files in Python 
 
 An easy to use Python (3.6 and above) package for quickly plotting the contents of NetCDF files. 
@@ -16,8 +9,9 @@ An easy to use Python (3.6 and above) package for quickly plotting the contents 
 
 Install the development version using using pip:
 ```sh
-pip install git+https://github.com/pmlmodelling/nctplot.git
+pip install git+https://github.com/pmlmodelling/ncplot.git
 ```
+
 
 
 
@@ -60,6 +54,7 @@ from ncplot import ncplot
 nplot("example.nc")
 
 ```
+
 
 
 
