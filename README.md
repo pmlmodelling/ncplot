@@ -3,6 +3,7 @@
 
 An easy to use Python (3.6 and above) package for quickly plotting the contents of NetCDF files or xarray datasets. 
 
+This package is designed to work with CF compliant data. 
 
 ## Installation
 
@@ -11,6 +12,7 @@ Install the development version using using pip:
 ```sh
 pip install git+https://github.com/pmlmodelling/ncplot.git
 ```
+
 
 
 
@@ -66,6 +68,7 @@ ncplot("example.nc", vars)
 ```
 
 where vars is a string representing a variable or a list of variables.
+
 
 
 
