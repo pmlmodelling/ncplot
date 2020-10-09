@@ -191,10 +191,30 @@ def ncplot(ff, vars=None):
             len(ds.coords[lat_name].values) == 1
         ):
 
-            intplot = df.drop_duplicates().hvplot.heatmap(
-                x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
-                        cmap="viridis"
-            )
+            if type(vars) is list:
+                intplot = df.drop_duplicates().hvplot.heatmap(
+                    x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
+                            cmap="viridis"
+                )
+            else:
+
+                self_max = ds.rename({vars: "x"}).x.max()
+                self_min = ds.rename({vars: "x"}).x.min()
+                v_max = float(max(self_max.values, -self_min.values))
+
+                if self_max > 0 and self_min < 0:
+
+                    intplot = df.drop_duplicates().hvplot.heatmap(
+                        x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
+                        cmap='RdBu_r',
+                        responsive=(in_notebook() is False)
+                    ).opts(clim=(-v_max, v_max))
+                else:
+                    intplot = df.drop_duplicates().hvplot.heatmap(
+                        x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
+                                cmap="viridis"
+                    )
+
             if in_notebook():
                 return intplot
 
