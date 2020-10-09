@@ -46,7 +46,7 @@ pip install hvplot==0.5.2
 
 ## How to use
 
-The package is made up of a simple easy to use function: ncplot.
+The package is made up of a simple easy to use function: ncplot. To visualize everything in a file:
 
 ```sh
 from ncplot import ncplot
@@ -55,6 +55,16 @@ nplot("example.nc")
 
 ```
 
+or to visualize a specific variable or list of variables:
+
+```sh
+from ncplot import ncplot
+
+nplot("example.nc", vars)
+
+```
+
+where vars is a string representing a variable or a list of variables.
 
 
 
