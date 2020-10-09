@@ -192,7 +192,8 @@ def ncplot(ff, vars=None):
         ):
 
             intplot = df.drop_duplicates().hvplot.heatmap(
-                x=x_var, y=y_var, C="value", groupby="variable", colorbar=True
+                x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
+                        cmap="viridis"
             )
             if in_notebook():
                 return intplot
@@ -249,7 +250,8 @@ def ncplot(ff, vars=None):
                         x=x_var,
                         y=y_var,
                         C="value",
-                        groupby=["variable", "time"],
+                        groupby=["variable", time_name],
+                        cmap="viridis",
                         colorbar=True,
                     )
                     if in_notebook():
@@ -280,17 +282,17 @@ def ncplot(ff, vars=None):
         keep = vars
         df = df.reset_index()
 
-        to_go = [x for x in df.columns if (x not in ["time"] and x not in keep)]
+        to_go = [x for x in df.columns if (x not in [time_name] and x not in keep)]
 
         df = df.drop(columns=to_go).drop_duplicates()
 
         if panel:
             intplot = (
-                df.set_index("time")
+                df.set_index(time_name)
                 .loc[:, vars]
                 .reset_index()
-                .melt("time")
-                .set_index("time")
+                .melt(time_name)
+                .set_index(time_name)
                 .hvplot(
                     by="variable",
                     logy=log,
@@ -313,11 +315,11 @@ def ncplot(ff, vars=None):
         else:
             intplot = (
                 df.reset_index()
-                .set_index("time")
+                .set_index(time_name)
                 .loc[:, vars]
                 .reset_index()
-                .melt("time")
-                .set_index("time")
+                .melt(time_name)
+                .set_index(time_name)
                 .hvplot(
                     groupby="variable",
                     logy=log,
