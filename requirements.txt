@@ -1,0 +1,7 @@
+xarray
+netCDF4
+hvplot
+panel
+pandas
+metpy
+
