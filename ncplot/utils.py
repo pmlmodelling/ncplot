@@ -1,22 +1,24 @@
-
 import subprocess
 
 import xarray as xr
 import pandas as pd
-import netCDF4
 import logging
 import metpy
 
 metpy_log = logging.getLogger("metpy")
 metpy_log.setLevel(logging.CRITICAL)
 
+
 def get_dims(ff):
 
     try:
-        ds = xr.open_dataset(ff)
+        if type(ff) is xr.core.dataset.Dataset:
+            ds = ff
+        else:
+            ds = xr.open_dataset(ff)
 
-        dset = netCDF4.Dataset(ff)
-        var = [x for x in dset.variables.keys()  if x not in  list(dset.dimensions)][0]
+        ff_dims = list(ds.dims)
+        var = [x for x in ds.variables.keys() if x not in ff_dims][0]
         ds = ds.metpy.parse_cf()
 
         try:
@@ -39,19 +41,25 @@ def get_dims(ff):
 
         # it's possible metpy will not parse lat/lon properly. In this case check if "lon"/"lat" appear in dims once
         if lon_name is None or lat_name is None:
-            lons = [x for x in list(dset.dimensions) if r"lon" in x]
-            lats = [x for x in list(dset.dimensions) if r"lat" in x]
+            lons = [x for x in ff_dims if r"lon" in x]
+            lats = [x for x in ff_dims if r"lat" in x]
 
             if len(lons) == 1 and len(lats) == 1:
                 lon_name = lons[0]
                 lat_name = lats[0]
 
-
-        return pd.DataFrame({"longitude":[lon_name], "latitude":[lat_name], "time":[time_name]})
+        return pd.DataFrame(
+            {"longitude": [lon_name], "latitude": [lat_name], "time": [time_name]}
+        )
 
     except:
-        dset = netCDF4.Dataset(ff)
-        lats = [x for x in list(dset.dimensions) if r"lat" in x]
+        if type(ff) is xr.core.dataset.Dataset:
+            ds = ff
+        else:
+            ds = xr.open_dataset(ff, decode_times=False)
+
+        ff_dims = list(ds.dims)
+        lats = [x for x in ff_dims if r"lat" in x]
         if len(lats) > 1:
             raise ValueError("Cannot parse dimension names!")
 
@@ -60,7 +68,7 @@ def get_dims(ff):
         else:
             lat_name = lats[0]
 
-        lons = [x for x in list(dset.dimensions) if r"lon" in x]
+        lons = [x for x in ff_dims if r"lon" in x]
         if len(lons) > 1:
             raise ValueError("Cannot parse dimension names!")
 
@@ -69,7 +77,7 @@ def get_dims(ff):
         else:
             lon_name = lons[0]
 
-        times = [x for x in list(dset.dimensions) if r"time" in x]
+        times = [x for x in ff_dims if r"time" in x]
         if len(times) > 1:
             raise ValueError("Cannot parse dimension names!")
 
@@ -77,11 +85,9 @@ def get_dims(ff):
             time_name = None
         else:
             time_name = times[0]
-        return pd.DataFrame({"longitude":[lon_name], "latitude":[lat_name], "time":[time_name]})
-
-
-
-
+        return pd.DataFrame(
+            {"longitude": [lon_name], "latitude": [lat_name], "time": [time_name]}
+        )
 
 
 def is_curvilinear(ff):
@@ -100,7 +106,3 @@ def is_curvilinear(ff):
         )
         > 0
     )
-
-
-
-

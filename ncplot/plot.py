@@ -1,5 +1,4 @@
 import sys
-import netCDF4
 from threading import Thread
 
 import time
@@ -35,25 +34,34 @@ def in_notebook():
     return "ipykernel" in sys.modules
 
 
-def ncplot(ff, vars=None):
+def ncplot(x, vars=None):
     """
     Plot the contents of a NetCDF file
     Parameters
     -------------
+    x : object or str
+        xarray object or file path
     vars: list or str
         Variables you want to plot. Everything will be plotted if this is not supplied
     """
 
     log = False
     panel = False
+    if type(x) is xr.core.dataset.Dataset:
+        xr_file = True
+    else:
+        xr_file = False
 
-    df_dims = get_dims(ff)
+    df_dims = get_dims(x)
 
-    try:
-        ds = xr.open_dataset(ff)
-    except:
-        ds = xr.open_dataset(ff, decode_times=False)
-        warnings.warn("Warning: xarray could not decode times!")
+    if xr_file is False:
+        try:
+            ds = xr.open_dataset(x)
+        except:
+            ds = xr.open_dataset(x, decode_times=False)
+            warnings.warn("Warning: xarray could not decode times!")
+    else:
+        ds = x
 
     # figure out number of points
     lon_name = df_dims.longitude[0]
@@ -78,18 +86,17 @@ def ncplot(ff, vars=None):
         if len(ds[lat_name].values) > 1:
             n_points += len(ds[lat_name].values)
 
-    dset = netCDF4.Dataset(ff)
+    ff_dims = list(ds.dims)
 
-    possible_others = [x for x in list(dset.dimensions) if x not in df_dims.columns]
+    possible_others = [x for x in ff_dims if x not in df_dims.columns]
 
     if len(possible_others) == 0:
         n_levels = 1
     else:
         n_levels = len(ds[possible_others[0]].values)
 
-
     if vars is None:
-        vars = [x for x in dset.variables.keys() if x not in list(dset.dimensions)]
+        vars = [x for x in list(ds.variables) if x not in ff_dims]
 
         # also must have all of the coordinates...
 
@@ -105,13 +112,12 @@ def ncplot(ff, vars=None):
         if len(vars) == 1:
             vars = vars[0]
 
-
     if type(vars) is list:
         for vv in vars:
-            if vv not in dset.variables.keys():
+            if vv not in list(ds.variables):
                 raise ValueError(f"{vv} is not a valid variable")
     else:
-        if vars not in dset.variables.keys():
+        if vars not in list(ds.variables):
             raise ValueError(f"{vars} is not a valid variable")
     # Case when all you can plot is a time series
 
@@ -129,15 +135,12 @@ def ncplot(ff, vars=None):
         if type(vars) is str:
             vars = [vars]
 
-
         for x in list(ds.coords):
             if len(ds.coords[x].values) > 1:
                 x_var = x
                 break
 
-
         selection = [x for x in df.columns if x in vars or x == x_var]
-
 
         df = df.loc[:, selection].melt(x_var).drop_duplicates().set_index(x_var)
 
@@ -193,8 +196,12 @@ def ncplot(ff, vars=None):
 
             if type(vars) is list:
                 intplot = df.drop_duplicates().hvplot.heatmap(
-                    x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
-                            cmap="viridis"
+                    x=x_var,
+                    y=y_var,
+                    C="value",
+                    groupby="variable",
+                    colorbar=True,
+                    cmap="viridis",
                 )
             else:
 
@@ -204,15 +211,27 @@ def ncplot(ff, vars=None):
 
                 if self_max > 0 and self_min < 0:
 
-                    intplot = df.drop_duplicates().hvplot.heatmap(
-                        x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
-                        cmap='RdBu_r',
-                        responsive=(in_notebook() is False)
-                    ).opts(clim=(-v_max, v_max))
+                    intplot = (
+                        df.drop_duplicates()
+                        .hvplot.heatmap(
+                            x=x_var,
+                            y=y_var,
+                            C="value",
+                            groupby="variable",
+                            colorbar=True,
+                            cmap="RdBu_r",
+                            responsive=(in_notebook() is False),
+                        )
+                        .opts(clim=(-v_max, v_max))
+                    )
                 else:
                     intplot = df.drop_duplicates().hvplot.heatmap(
-                        x=x_var, y=y_var, C="value", groupby="variable", colorbar=True,
-                                cmap="viridis"
+                        x=x_var,
+                        y=y_var,
+                        C="value",
+                        groupby="variable",
+                        colorbar=True,
+                        cmap="viridis",
                     )
 
             if in_notebook():
@@ -250,7 +269,11 @@ def ncplot(ff, vars=None):
                         break
 
                 for x in list(ds.coords):
-                    if (len(ds.coords[x].values) > 1) and (x is not x_var) and (x != time_name):
+                    if (
+                        (len(ds.coords[x].values) > 1)
+                        and (x is not x_var)
+                        and (x != time_name)
+                    ):
                         y_var = x
                         break
 
@@ -360,7 +383,7 @@ def ncplot(ff, vars=None):
 
     if (n_points > 1) and (n_levels >= 1) and (type(vars) is list):
 
-        if is_curvilinear(ff):
+        if is_curvilinear(ds):
             intplot = ds.hvplot.quadmesh(
                 lon_name,
                 lat_name,
@@ -402,13 +425,14 @@ def ncplot(ff, vars=None):
         v_max = max(self_max.values, -self_min.values)
 
         if (self_max.values > 0) and (self_min.values < 0):
-            if is_curvilinear(ff):
+            if is_curvilinear(ds):
                 intplot = ds.hvplot.quadmesh(
                     lon_name,
                     lat_name,
                     vars,
                     dynamic=True,
                     logz=log,
+                    cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
             else:
@@ -418,6 +442,7 @@ def ncplot(ff, vars=None):
                     vars,
                     dynamic=True,
                     logz=log,
+                    cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
             if in_notebook():
@@ -431,7 +456,7 @@ def ncplot(ff, vars=None):
             return None
 
         else:
-            if is_curvilinear(ff):
+            if is_curvilinear(ds):
                 intplot = ds.hvplot.quadmesh(
                     lon_name,
                     lat_name,
