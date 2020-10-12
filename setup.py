@@ -21,6 +21,14 @@ setup(name='ncplot',
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       python_requires='>=3.6.1',
+
+      entry_points={
+        'console_scripts': [
+            'ncplot =ncplot.command_line:main',
+        ] },
+
+      #entry_points = 'console_scripts': ['funniest-joke=funniest.command_line:main'] },
+
       classifiers=[
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: POSIX :: Linux",
