@@ -53,6 +53,10 @@ def get_dims(ff):
                 lon_name = "x"
                 lat_name = "y"
 
+            if "x_coord" in ff_dims and "y_coord" in ff_dims:
+                lon_name = "x_coord"
+                lat_name = "y_coord"
+
         return pd.DataFrame(
             {"longitude": [lon_name], "latitude": [lat_name], "time": [time_name]}
         )
@@ -95,6 +99,9 @@ def get_dims(ff):
             if "x" in ff_dims and "y" in ff_dims:
                 lon_name = "x"
                 lat_name = "y"
+            if "x_coord" in ff_dims and "y_coord" in ff_dims:
+                lon_name = "x_coord"
+                lat_name = "y_coord"
 
         return pd.DataFrame(
             {"longitude": [lon_name], "latitude": [lat_name], "time": [time_name]}

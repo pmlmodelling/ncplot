@@ -10,11 +10,56 @@ import hvplot.xarray
 from bokeh.plotting import show
 import xarray as xr
 import warnings
+import copy
+import numpy as np
 
 from ncplot.utils import get_dims
 
 hv.extension("bokeh")
 hv.Store.renderers
+
+
+def change_coords(dx):
+
+
+    ds = dx.copy()
+    df_dims = get_dims(ds)
+
+    lon_name = df_dims.longitude[0]
+    lat_name = df_dims.latitude[0]
+
+    if len(np.unique(ds[lon_name].values[0])) == len(ds[lon_name].values[0]):
+        return ds
+
+    if sum(ds[lon_name].values[0]== ds[lon_name].values[1]) == len(ds[lon_name][0]):
+        for i in range(0, len(ds[lon_name])):
+            ds[lon_name].values[i] = range(0, len(ds[lon_name][0]))
+    else:
+        for i in range(0, len(ds[lat_name])):
+            ds[lon_name].values[i] = np.repeat(i, len(ds[lon_name][i]))
+
+    if sum(ds[lat_name].values[0]== ds[lat_name].values[1]) == len(ds[lon_name][0]):
+        for i in range(0, len(ds[lat_name])):
+            ds[lat_name].values[i] = range(0, len(ds[lat_name][i]))
+    else:
+        for i in range(0, len(ds[lat_name])):
+            ds[lat_name].values[i] = np.repeat(i, len(ds[lat_name][i]))
+
+    if "x" in list(ds.dims.keys()):
+        ds.coords[lon_name].attrs["long_name"] = "x"
+        ds.coords[lon_name].attrs["units"] = "x"
+        ds = ds.rename({lon_name: "x_coord"})
+    else:
+        ds = ds.rename({lon_name: "x"})
+
+    if "y" in list(ds.dims.keys()):
+        ds.coords[lat_name].attrs["long_name"] = "y"
+        ds.coords[lat_name].attrs["units"] = "y"
+        ds = ds.rename({lat_name: "y_coord"})
+    else:
+        ds = ds.rename({lat_name: "y"})
+
+    return ds
 
 
 def is_curvilinear(ds):
@@ -58,7 +103,6 @@ def ncplot(x, vars=None):
     else:
         xr_file = False
 
-    df_dims = get_dims(x)
 
     if xr_file is False:
         try:
@@ -69,6 +113,11 @@ def ncplot(x, vars=None):
     else:
         ds = x
 
+    if is_curvilinear(ds):
+        ds = change_coords(ds)
+
+
+    df_dims = get_dims(ds)
     # figure out number of points
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
@@ -399,6 +448,7 @@ def ncplot(x, vars=None):
     if (n_points > 1) and (n_levels >= 1) and (type(vars) is list):
 
         if is_curvilinear(ds):
+
             intplot = ds.hvplot.quadmesh(
                 lon_name,
                 lat_name,
