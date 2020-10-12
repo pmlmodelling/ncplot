@@ -17,7 +17,13 @@ hv.extension("bokeh")
 hv.Store.renderers
 
 
-def is_curvilinear(ff):
+def is_curvilinear(ds):
+
+    ds_dims = get_dims(ds)
+
+    if len(ds.coords[ds_dims.longitude.values[0]].dims) > 1:
+        return True
+
     return False
 
 
@@ -86,7 +92,7 @@ def ncplot(x, vars=None):
         if len(ds[lat_name].values) > 1:
             n_points += len(ds[lat_name].values)
 
-    ff_dims = list(ds.dims)
+    ff_dims = list(ds.coords)
 
     possible_others = [x for x in ff_dims if x not in df_dims.columns]
 
@@ -247,6 +253,15 @@ def ncplot(x, vars=None):
     # heat map where 3 coords have more than 1 value, and one of them is time. Not a spatial map though
     if len([x for x in coord_df.length if x > 1]) == 3:
 
+
+        non_map = True
+
+        if lon_name is not None and lat_name is not None:
+            lons = int(coord_df.query("coord == @lon_name").length)
+            lats = int(coord_df.query("coord == @lat_name").length)
+            if lons > 1 and lats > 1:
+                non_map = False
+
         time_in = False
 
         possible = 0
@@ -258,7 +273,7 @@ def ncplot(x, vars=None):
         if possible > 1:
             time_in = False
 
-        if time_name in coord_list and time_in:
+        if time_name in coord_list and time_in and non_map:
 
             if coord_df.query("coord == @time_name").length.values > 1:
 
@@ -314,7 +329,7 @@ def ncplot(x, vars=None):
 
         df = ds
 
-        dim_dict = dict(df.dims)
+        dim_dict = dict(df.coords)
         to_go = []
         for kk in dim_dict.keys():
             if dim_dict[kk] == 1:
@@ -394,6 +409,8 @@ def ncplot(x, vars=None):
                 responsive=in_notebook() is False,
             )
         else:
+
+
             intplot = ds.hvplot.image(
                 lon_name,
                 lat_name,
@@ -415,6 +432,7 @@ def ncplot(x, vars=None):
         return None
 
     if n_points > 1:
+
 
         if type(vars) is list:
             warnings.warn(message="Warning: Only the first variable is mapped")
@@ -445,6 +463,7 @@ def ncplot(x, vars=None):
                     cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
+
             if in_notebook():
                 return intplot
 
@@ -467,6 +486,7 @@ def ncplot(x, vars=None):
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
             else:
+
                 intplot = ds.hvplot.image(
                     lon_name,
                     lat_name,
@@ -476,6 +496,8 @@ def ncplot(x, vars=None):
                     cmap="viridis",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
+
+
 
             if in_notebook():
                 return intplot

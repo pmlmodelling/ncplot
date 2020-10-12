@@ -17,7 +17,7 @@ def get_dims(ff):
         else:
             ds = xr.open_dataset(ff)
 
-        ff_dims = list(ds.dims)
+        ff_dims = list(ds.coords)
         var = [x for x in ds.variables.keys() if x not in ff_dims][0]
         ds = ds.metpy.parse_cf()
 
@@ -48,6 +48,11 @@ def get_dims(ff):
                 lon_name = lons[0]
                 lat_name = lats[0]
 
+        if lon_name is None and lat_name is None:
+            if "x" in ff_dims and "y" in ff_dims:
+                lon_name = "x"
+                lat_name = "y"
+
         return pd.DataFrame(
             {"longitude": [lon_name], "latitude": [lat_name], "time": [time_name]}
         )
@@ -58,7 +63,7 @@ def get_dims(ff):
         else:
             ds = xr.open_dataset(ff, decode_times=False)
 
-        ff_dims = list(ds.dims)
+        ff_dims = list(ds.coords)
         lats = [x for x in ff_dims if r"lat" in x]
         if len(lats) > 1:
             raise ValueError("Cannot parse dimension names!")
@@ -85,6 +90,12 @@ def get_dims(ff):
             time_name = None
         else:
             time_name = times[0]
+
+        if lon_name is None and lat_name is None:
+            if "x" in ff_dims and "y" in ff_dims:
+                lon_name = "x"
+                lat_name = "y"
+
         return pd.DataFrame(
             {"longitude": [lon_name], "latitude": [lat_name], "time": [time_name]}
         )
