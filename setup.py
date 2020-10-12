@@ -3,12 +3,13 @@ from setuptools import Command, find_packages, setup
 DESCRIPTION = "Automatic plotting of NetCDF files in Python"
 LONG_DESCRIPTION = """
 
+**ncplot** is an easy to use Python (3.6 and above) package for automatically creating interactive plots of the contents of NetCDF files.
 
 """
 
 PROJECT_URLS = {
     "Bug Tracker": "https://github.com/r4ecology/ncplot/issues",
-    #"Documentation": "https://nctoolkit.readthedocs.io/en/stable",
+    #"Documentation": "https://ncplot.readthedocs.io/en/stable",
     "Source Code": "https://github.com/r4ecology/ncplot",
 }
 
