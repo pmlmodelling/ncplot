@@ -97,6 +97,8 @@ pygments_style = 'sphinx'
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+nbsphinx_allow_errors = True
+
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #
