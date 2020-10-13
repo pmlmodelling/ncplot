@@ -24,6 +24,7 @@ Documentation
 **Help & reference**
 
 * :doc:`api`
+* :doc:`info`
 
 .. toctree::
    :maxdepth: 1
@@ -31,6 +32,7 @@ Documentation
    :caption: Help & reference
 
    api
+   info
    
 
 
