@@ -1,8 +1,7 @@
 How to use ncplot in Python
 ---------------------------
 
-Using cmipsearch is relatively easy. It let’s you search and download
-CMIP6 data files.
+Using ncplot is very easy. It let's you plot the contents of a NetCDF automatically. To plot a file in Python, preferably a Jupyter notebook, do the following:
 
 .. code:: ipython3
 
