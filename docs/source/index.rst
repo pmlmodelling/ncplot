@@ -9,7 +9,7 @@ Documentation
 **Getting Started**
 
 * :doc:`installing`
-* :doc:`howto`
+* :doc:`overview`
 
 .. toctree::
    :maxdepth: 1
