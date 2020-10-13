@@ -139,7 +139,10 @@ def ncplot(x, vars=None):
 
     time_name = df_dims.time[0]
 
-    n_times = len(ds[time_name].values)
+    if time_name is None:
+        n_times = 0
+    else:
+        n_times = len(ds[time_name].values)
 
     if lat_name is not None:
         if len(ds[lat_name].values) > 1:
@@ -187,7 +190,19 @@ def ncplot(x, vars=None):
 
     # heat map 1
 
+    # get rid of coordinates without multiple values
+
+
+
     coord_list = list(ds.coords)
+
+    for cc in coord_list:
+        if len(ds[cc].values.ravel()) <= 1:
+            if cc in list(ds.dims):
+                ds = ds.squeeze(cc, drop = True)
+
+    coord_list = list(ds.coords)
+
     coord_df = pd.DataFrame(
         {"coord": coord_list, "length": [len(ds.coords[x].values) for x in coord_list]}
     )
