@@ -17,8 +17,7 @@ Documentation
    :caption: Getting Started
 
    installing 
-   python 
-   command_line 
+   overview 
 
 
 
