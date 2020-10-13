@@ -1,9 +1,8 @@
 
-cmipsearch: tools to search for and download CMIP data 
+ncplot: Quick plotting of NetCDF files
 =======================================================
 
-Search for and download CMIP data in Python.
-
+Automatic plotting of NetCDF files in Python and on the command line on Unix systems.
 
 Documentation
 -------------
