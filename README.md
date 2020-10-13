@@ -1,6 +1,12 @@
 
 # ncplot - Automatic interactive plotting of NetCDF files in Python 
 
+[![pypi](https://img.shields.io/pypi/v/ncplot.svg)](https://pypi.python.org/pypi/ncplot/)
+
+[![Documentation Status](https://readthedocs.org/projects/ncplot/badge/?version=latest)](https://ncplot.readthedocs.io/en/latest/?badge=latest)
+
+
+
 An easy to use Python (3.6 and above) package for quickly plotting the contents of NetCDF files or xarray datasets. 
 
 This package is designed to work with CF compliant data. 
@@ -71,6 +77,10 @@ where vars is a string representing a variable or a list of variables.
 
 
 
+
+# Reference and tutorials
+
+A full API reference, and a how-to guide are available at [readthedocs](https://ncplot.readthedocs.io/en/latest/).
 
 
 
