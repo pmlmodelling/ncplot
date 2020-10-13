@@ -1,6 +1,6 @@
 from setuptools import Command, find_packages, setup
 
-DESCRIPTION = "Automatic plotting of NetCDF files in Python"
+DESCRIPTION = "Automatic plotting of NetCDF files in Python and on the command line"
 LONG_DESCRIPTION = """
 
 **ncplot** is an easy to use Python (3.6 and above) package for automatically creating interactive plots of the contents of NetCDF files.
@@ -8,16 +8,16 @@ LONG_DESCRIPTION = """
 """
 
 PROJECT_URLS = {
-    "Bug Tracker": "https://github.com/r4ecology/ncplot/issues",
-    #"Documentation": "https://ncplot.readthedocs.io/en/stable",
-    "Source Code": "https://github.com/r4ecology/ncplot",
+    "Bug Tracker": "https://github.com/pmlmodelling/ncplot/issues",
+    "Documentation": "https://ncplot.readthedocs.io/en/stable",
+    "Source Code": "https://github.com/pmlmodelling/ncplot",
 }
 
 REQUIREMENTS = [i.strip() for i in open("requirements.txt").readlines()]
 
 
 setup(name='ncplot',
-      version='0.0.2',
+      version='0.0.3',
       description=DESCRIPTION,
       long_description=LONG_DESCRIPTION,
       python_requires='>=3.6.1',
@@ -39,7 +39,7 @@ setup(name='ncplot',
     ],
 
       project_urls=PROJECT_URLS,
-      url = "https://github.com/r4ecology/ncplot",
+      url = "https://github.com/pmlmodelling/ncplot",
       author='Robert Wilson',
       maintainer='Robert Wilson',
       author_email='rwi@pml.ac.uk',
