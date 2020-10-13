@@ -13,7 +13,7 @@ import warnings
 import copy
 import numpy as np
 
-from ncplot.utils import get_dims
+from ncplot.utils import get_dims, check_lon, check_lat
 
 hv.extension("bokeh")
 hv.Store.renderers
@@ -21,24 +21,24 @@ hv.Store.renderers
 
 def change_coords(dx):
 
-
     ds = dx.copy()
     df_dims = get_dims(ds)
 
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
 
-    if len(np.unique(ds[lon_name].values[0])) == len(ds[lon_name].values[0]):
+    # if there are repeated zeros
+    if len([x for x in ds[lat_name].values[0] if x == 0]) <= 1:
         return ds
 
-    if sum(ds[lon_name].values[0]== ds[lon_name].values[1]) == len(ds[lon_name][0]):
+    if sum(ds[lon_name].values[0] == ds[lon_name].values[1]) == len(ds[lon_name][0]):
         for i in range(0, len(ds[lon_name])):
             ds[lon_name].values[i] = range(0, len(ds[lon_name][0]))
     else:
         for i in range(0, len(ds[lat_name])):
             ds[lon_name].values[i] = np.repeat(i, len(ds[lon_name][i]))
 
-    if sum(ds[lat_name].values[0]== ds[lat_name].values[1]) == len(ds[lon_name][0]):
+    if sum(ds[lat_name].values[0] == ds[lat_name].values[1]) == len(ds[lon_name][0]):
         for i in range(0, len(ds[lat_name])):
             ds[lat_name].values[i] = range(0, len(ds[lat_name][i]))
     else:
@@ -103,7 +103,6 @@ def ncplot(x, vars=None):
     else:
         xr_file = False
 
-
     if xr_file is False:
         try:
             ds = xr.open_dataset(x)
@@ -113,14 +112,19 @@ def ncplot(x, vars=None):
     else:
         ds = x
 
+    quadmesh = False
     if is_curvilinear(ds):
         ds = change_coords(ds)
-
+        quadmesh = True
 
     df_dims = get_dims(ds)
     # figure out number of points
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
+
+    if quadmesh:
+        lon_name = check_lon(lon_name, ds)
+        lat_name = check_lat(lat_name, ds)
 
     n_points = 1
     if lon_name is not None:
@@ -155,11 +159,16 @@ def ncplot(x, vars=None):
 
         # also must have all of the coordinates...
 
+    # code below figures out what is a variable, not a coordinate. Could be improved...
+
     if type(vars) is list:
         new_vars = []
         for vv in vars:
             # if vv == "lon_bnds":
-            if set(list(ds[vv].coords)) == set(list(ds.coords)):
+            set_coords = set(
+                [x for x in list(ds.coords) if "vertice" not in x and "bnds" not in x]
+            )
+            if set(list(ds[vv].coords)) == set_coords:
                 new_vars.append(vv)
         vars = new_vars
 
@@ -184,6 +193,7 @@ def ncplot(x, vars=None):
     )
 
     # line plot
+
     if len([x for x in coord_df.length if x > 1]) == 1:
 
         df = ds.to_dataframe().reset_index()
@@ -301,7 +311,6 @@ def ncplot(x, vars=None):
 
     # heat map where 3 coords have more than 1 value, and one of them is time. Not a spatial map though
     if len([x for x in coord_df.length if x > 1]) == 3:
-
 
         non_map = True
 
@@ -460,7 +469,6 @@ def ncplot(x, vars=None):
             )
         else:
 
-
             intplot = ds.hvplot.image(
                 lon_name,
                 lat_name,
@@ -482,7 +490,6 @@ def ncplot(x, vars=None):
         return None
 
     if n_points > 1:
-
 
         if type(vars) is list:
             warnings.warn(message="Warning: Only the first variable is mapped")
@@ -546,8 +553,6 @@ def ncplot(x, vars=None):
                     cmap="viridis",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
-
-
 
             if in_notebook():
                 return intplot

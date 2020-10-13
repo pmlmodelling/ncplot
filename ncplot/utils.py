@@ -9,6 +9,34 @@ metpy_log = logging.getLogger("metpy")
 metpy_log.setLevel(logging.CRITICAL)
 
 
+def check_lon(x, ds):
+    dims = list(ds.dims)
+    news = ds.coords[x]
+    possibles = [i for i in list(news.coords) if i in dims]
+
+    if len(possibles) == 2:
+        if possibles[0] < possibles[1]:
+            return possibles[0]
+        else:
+            return possibles[1]
+
+    return x
+
+
+def check_lat(x, ds):
+    dims = list(ds.dims)
+    news = ds.coords[x]
+    possibles = [i for i in list(news.coords) if i in dims]
+
+    if len(possibles) == 2:
+        if possibles[0] > possibles[1]:
+            return possibles[0]
+        else:
+            return possibles[1]
+
+    return x
+
+
 def get_dims(ff):
 
     try:
@@ -70,7 +98,9 @@ def get_dims(ff):
         ff_dims = list(ds.coords)
         lats = [x for x in ff_dims if r"lat" in x]
         if len(lats) > 1:
-            raise ValueError("Cannot parse dimension names!")
+            lats = [x for x in lats if x in list(ds.dims)]
+            if len(lats) > 1:
+                raise ValueError("Cannot parse dimension names!")
 
         if len(lats) == 0:
             lat_name = None
@@ -79,7 +109,9 @@ def get_dims(ff):
 
         lons = [x for x in ff_dims if r"lon" in x]
         if len(lons) > 1:
-            raise ValueError("Cannot parse dimension names!")
+            lons = [x for x in lons if x in list(ds.dims)]
+            if len(lons) > 1:
+                raise ValueError("Cannot parse dimension names!")
 
         if len(lons) == 0:
             lon_name = None
