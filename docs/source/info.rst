@@ -14,6 +14,6 @@ If you identify bugs or issues with the package please raise an issue at PML's M
 
 Contributions welcome
 ------------------
-The package is new. It should be able to handle most types of NetCDF file, but there will still be times when errors are thrown.  If packages users which to contribute, suggest new features or point to data the package does not work with they are welcome to raise and issue at the package's GitHub page or contact me.
+The package is new. It should be able to handle most types of NetCDF file, but there will still be times when errors are thrown.  If packages users would like to contribute, suggest new features or point to data the package does not work with they are welcome to raise and issue at the package's GitHub page or contact me.
 
 
