@@ -13,14 +13,15 @@ This package is designed to work with CF compliant data.
 
 ## Installation
 
+To install from pypi:
+```sh
+pip install ncplot 
+```
 
 Install the development version using using pip:
 ```sh
 pip install git+https://github.com/pmlmodelling/ncplot.git
 ```
-
-
-
 
 
 ## Issues with dependencies 
@@ -74,6 +75,7 @@ ncplot("example.nc", vars)
 ```
 
 where vars is a string representing a variable or a list of variables.
+
 
 
 
