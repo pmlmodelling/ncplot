@@ -3,7 +3,7 @@ from setuptools import Command, find_packages, setup
 DESCRIPTION = "Automatic plotting of NetCDF files in Python and on the command line"
 LONG_DESCRIPTION = """
 
-**ncplot** is an easy to use Python (3.6 and above) package for automatically creating interactive plots of the contents of NetCDF files.
+**ncplot** is an easy to use Python (3.6 and above) package for automatically creating interactive plots of the contents of NetCDF files. If you have used ncview, you will know what to expect.
 
 """
 
