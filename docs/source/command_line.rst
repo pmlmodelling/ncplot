@@ -1,4 +1,4 @@
-How to use ncplot as a command line tool
+How to use as a command line tool
 ----------------------------------------
 
 ncplot operates as a command line tool, letting you view the contents of

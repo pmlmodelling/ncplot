@@ -1,4 +1,4 @@
-How to use ncplot in Python
+How to use in Python
 ---------------------------
 
 Using ncplot is very easy. It let's you plot the contents of a NetCDF automatically. To plot a file in Python, preferably a Jupyter notebook, do the following:
