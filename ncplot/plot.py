@@ -192,14 +192,12 @@ def ncplot(x, vars=None):
 
     # get rid of coordinates without multiple values
 
-
-
     coord_list = list(ds.coords)
 
     for cc in coord_list:
         if len(ds[cc].values.ravel()) <= 1:
             if cc in list(ds.dims):
-                ds = ds.squeeze(cc, drop = True)
+                ds = ds.squeeze(cc, drop=True)
 
     coord_list = list(ds.coords)
 
@@ -270,9 +268,18 @@ def ncplot(x, vars=None):
         selection = [x for x in df.columns if x in vars or x == x_var or x == y_var]
 
         df = df.loc[:, selection].melt([x_var, y_var]).drop_duplicates()
-        if (len(ds.coords[lon_name].values) == 1) or (
-            len(ds.coords[lat_name].values) == 1
-        ):
+
+        # we need to make sure this is not 2d geographic data
+        case1 = 0
+        if lon_name is not None and lon_name in list(ds.coords):
+            if len(ds.coords[lon_name].values) > 1:
+                case1 += 1
+
+        if lat_name is not None and lat_name in list(ds.coords):
+            if len(ds.coords[lat_name].values) > 1:
+                case1 += 1
+
+        if case1 <= 1:
 
             if type(vars) is list:
                 intplot = df.drop_duplicates().hvplot.heatmap(
@@ -473,6 +480,8 @@ def ncplot(x, vars=None):
 
         if is_curvilinear(ds):
 
+            # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
+
             intplot = ds.hvplot.quadmesh(
                 lon_name,
                 lat_name,
@@ -480,9 +489,13 @@ def ncplot(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 logz=log,
+                #    coastline = w1,
                 responsive=in_notebook() is False,
             )
+            # intplot = pn.Column(pn.WidgetBox(w1), intplot)
         else:
+
+            # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
 
             intplot = ds.hvplot.image(
                 lon_name,
@@ -491,8 +504,10 @@ def ncplot(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 logz=log,
+                # coastline = w1,
                 responsive=in_notebook() is False,
             )
+            # intplot = pn.Column(pn.WidgetBox(w1), intplot)
 
         if in_notebook():
             return intplot
@@ -516,6 +531,7 @@ def ncplot(x, vars=None):
 
         if (self_max.values > 0) and (self_min.values < 0):
             if is_curvilinear(ds):
+                # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
                 intplot = ds.hvplot.quadmesh(
                     lon_name,
                     lat_name,
@@ -525,7 +541,9 @@ def ncplot(x, vars=None):
                     cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
+                # intplot = pn.Row(pn.WidgetBox(w1), intplot)
             else:
+                # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
                 intplot = ds.hvplot.image(
                     lon_name,
                     lat_name,
@@ -535,6 +553,7 @@ def ncplot(x, vars=None):
                     cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
+                # intplot = pn.Row(pn.WidgetBox(w1), intplot)
 
             if in_notebook():
                 return intplot
