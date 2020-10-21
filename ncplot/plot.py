@@ -65,6 +65,8 @@ def change_coords(dx):
 def is_curvilinear(ds):
 
     ds_dims = get_dims(ds)
+    if ds_dims.longitude.values[0] is None or ds_dims.latitude.values[0] is None:
+        return False
 
     if len(ds.coords[ds_dims.longitude.values[0]].dims) > 1:
         return True
@@ -113,6 +115,7 @@ def ncplot(x, vars=None):
         ds = x
 
     quadmesh = False
+
     if is_curvilinear(ds):
         ds = change_coords(ds)
         quadmesh = True
@@ -138,6 +141,18 @@ def ncplot(x, vars=None):
     # figure out number of times
 
     time_name = df_dims.time[0]
+
+    # time name maybe cannot be parsed. If "time" is among the coords, use that
+
+    if time_name is None:
+        candidates = list()
+        n_candidates = 0
+        for x in list(ds.coords):
+            if x.startswith("time"):
+                candidates.append(x)
+                n_candidates += 0
+        if len(candidates) == 1:
+            time_name = candidates[0]
 
     if time_name is None:
         n_times = 0
@@ -337,21 +352,30 @@ def ncplot(x, vars=None):
         non_map = True
 
         if lon_name is not None and lat_name is not None:
-            lons = int(coord_df.query("coord == @lon_name").length)
-            lats = int(coord_df.query("coord == @lat_name").length)
+            if (lon_name is not None) and (lon_name in list(ds.coords)):
+                lons = int(coord_df.query("coord == @lon_name").length)
+            else:
+                lons = 0
+
+            if (lat_name) is not None and (lat_name in list(ds.coords)):
+                lats = int(coord_df.query("coord == @lat_name").length)
+            else:
+                lats = 0
+
             if lons > 1 and lats > 1:
                 non_map = False
 
         time_in = False
 
         possible = 0
+
         for x in coord_list:
             if "time" in x:
                 time_in = True
                 possible += 1
 
-        if possible > 1:
-            time_in = False
+        # if possible > 1:
+        #    time_in = False
 
         if time_name in coord_list and time_in and non_map:
 
@@ -380,9 +404,16 @@ def ncplot(x, vars=None):
 
                 df = df.loc[:, selection]
                 df = df.melt([x_var, y_var, time_name]).drop_duplicates()
-                if (len(ds.coords[lon_name].values) == 1) or (
-                    len(ds.coords[lat_name].values) == 1
-                ):
+                case1 = 0
+                if lon_name is not None and lon_name in list(ds.coords):
+                    if len(ds.coords[lon_name].values) > 1:
+                        case1 += 1
+
+                if lat_name is not None and lat_name in list(ds.coords):
+                    if len(ds.coords[lat_name].values) > 1:
+                        case1 += 1
+
+                if case1 <= 1:
 
                     intplot = df.drop_duplicates().hvplot.heatmap(
                         x=x_var,
