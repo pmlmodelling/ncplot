@@ -179,10 +179,16 @@ def ncplot(x, vars=None):
 
     # code below figures out what is a variable, not a coordinate. Could be improved...
 
+    coord_list = list(ds.coords)
+
+    for cc in coord_list:
+        if len(ds[cc].values.ravel()) <= 1:
+            if cc in list(ds.dims):
+                ds = ds.squeeze(cc, drop=True)
+
     if type(vars) is list:
         new_vars = []
         for vv in vars:
-            # if vv == "lon_bnds":
             set_coords = set(
                 [x for x in list(ds.coords) if "vertice" not in x and "bnds" not in x]
             )
@@ -193,6 +199,7 @@ def ncplot(x, vars=None):
     if type(vars) is list:
         if len(vars) == 1:
             vars = vars[0]
+
 
     if type(vars) is list:
         for vv in vars:
@@ -221,6 +228,7 @@ def ncplot(x, vars=None):
     )
 
     # line plot
+
 
     if len([x for x in coord_df.length if x > 1]) == 1:
 
