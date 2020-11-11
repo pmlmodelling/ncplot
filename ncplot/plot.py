@@ -2,6 +2,8 @@ import sys
 from threading import Thread
 
 from cartopy import crs
+import geoviews
+import cartopy
 import time
 import holoviews as hv
 import panel as pn
@@ -121,7 +123,7 @@ def ncplot(x, vars=None):
 
     """
 
-    warning.warning(message = "ncplot is deprecated. Use view instead.")
+    warnings.warn(message = "ncplot is deprecated. Use view instead.")
 
     log = False
     panel = False
