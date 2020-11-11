@@ -2,7 +2,7 @@ import os
 import io
 from setuptools import Command, find_packages, setup
 
-DESCRIPTION="Easy interactive plotting of NetCDF data"
+DESCRIPTION="Interactive viewing of NetCDF data"
 
 PROJECT_URLS = {
     "Bug Tracker": "https://github.com/pmlmodelling/ncplot/issues",
