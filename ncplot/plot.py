@@ -1,9 +1,12 @@
 import sys
 from threading import Thread
 
+from cartopy import crs
 import time
 import holoviews as hv
 import panel as pn
+import cartopy.crs as ccrs
+
 import pandas as pd
 import hvplot.pandas
 import hvplot.xarray
@@ -17,6 +20,22 @@ from ncplot.utils import get_dims, check_lon, check_lat
 
 hv.extension("bokeh")
 hv.Store.renderers
+
+
+def get_coastline(ds, lon_name, lat_name):
+    lon_max = ds[lon_name].values.max()
+    lon_min = ds[lon_name].values.min()
+
+    lat_max = ds[lat_name].values.max()
+    lat_min = ds[lat_name].values.min()
+
+    if  ((lon_max - lon_min) * (lat_max - lat_min))/(360**2) < 0.0016:
+        return '10m'
+
+    if  ((lon_max - lon_min) * (lat_max - lat_min))/(360**2) < 0.25:
+        return '50m'
+
+    return '110m'
 
 
 def change_coords(dx):
@@ -84,6 +103,9 @@ def in_notebook():
     Returns ``True`` if the module is running in IPython kernel,
     ``False`` if in IPython shell or other Python shell.
     """
+    if "spyder" in sys.modules:
+        return False
+
     return "ipykernel" in sys.modules
 
 
@@ -94,8 +116,9 @@ def ncplot(x, vars=None):
     -------------
     x : object or str
         xarray object or file path
-    vars: list or str
+    vars : list or str
         Variables you want to plot. Everything will be plotted if this is not supplied
+
     """
 
     log = False
@@ -519,7 +542,7 @@ def ncplot(x, vars=None):
 
         if is_curvilinear(ds):
 
-            # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
+            coastline = get_coastline(ds, lon_name, lat_name)
 
             intplot = ds.hvplot.quadmesh(
                 lon_name,
@@ -528,7 +551,7 @@ def ncplot(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 logz=log,
-                #    coastline = w1,
+                coastline = coastline,projection=ccrs.PlateCarree(),
                 responsive=in_notebook() is False,
             )
             # intplot = pn.Column(pn.WidgetBox(w1), intplot)
@@ -536,6 +559,7 @@ def ncplot(x, vars=None):
 
             # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
 
+            coastline = get_coastline(ds, lon_name, lat_name)
             intplot = ds.hvplot.image(
                 lon_name,
                 lat_name,
@@ -543,7 +567,8 @@ def ncplot(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 logz=log,
-                # coastline = w1,
+                coastline = coastline,
+                projection=ccrs.PlateCarree(),
                 responsive=in_notebook() is False,
             )
             # intplot = pn.Column(pn.WidgetBox(w1), intplot)
@@ -571,6 +596,7 @@ def ncplot(x, vars=None):
         if (self_max.values > 0) and (self_min.values < 0):
             if is_curvilinear(ds):
                 # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
+                coastline = get_coastline(ds, lon_name, lat_name)
                 intplot = ds.hvplot.quadmesh(
                     lon_name,
                     lat_name,
@@ -583,12 +609,15 @@ def ncplot(x, vars=None):
                 # intplot = pn.Row(pn.WidgetBox(w1), intplot)
             else:
                 # w1 = pn.widgets.Select(name='Coastline', options=[True, False])
+                coastline = get_coastline(ds, lon_name, lat_name)
                 intplot = ds.hvplot.image(
                     lon_name,
                     lat_name,
                     vars,
                     dynamic=True,
                     logz=log,
+                    coastline = coastline,
+                    projection=ccrs.PlateCarree(),
                     cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
@@ -617,6 +646,7 @@ def ncplot(x, vars=None):
                 ).redim.range(**{vars: (self_min.values, v_max)})
             else:
 
+                coastline = get_coastline(ds, lon_name, lat_name)
                 intplot = ds.hvplot.image(
                     lon_name,
                     lat_name,
@@ -624,6 +654,7 @@ def ncplot(x, vars=None):
                     dynamic=True,
                     logz=log,
                     cmap="viridis",
+                    coastline = coastline,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
 

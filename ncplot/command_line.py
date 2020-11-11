@@ -7,13 +7,20 @@ import os
 def main():
     if len(sys.argv) == 1:
         return "Please supply a file"
-    ff = sys.argv[1]
 
-    if os.path.exists(ff) == False:
+    for x in sys.argv[1:]:
+        if os.path.exists(x):
+            ff = x
+            break
+
+    if ff is None:
         return f"{ff} does not exist!"
 
+    ff = sys.argv[1]
+
     return ncplot(ff)
-    print(ascii_snek)
+
+
 
 if __name__ == '__main__':
     main()
