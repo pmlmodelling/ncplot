@@ -552,6 +552,7 @@ def ncplot(x, vars=None):
                 cmap="viridis",
                 logz=log,
                 coastline = coastline,projection=ccrs.PlateCarree(),
+                rasterize = True,
                 responsive=in_notebook() is False,
             )
             # intplot = pn.Column(pn.WidgetBox(w1), intplot)
@@ -604,6 +605,7 @@ def ncplot(x, vars=None):
                     dynamic=True,
                     logz=log,
                     cmap="RdBu_r",
+                    rasterize = True,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
                 # intplot = pn.Row(pn.WidgetBox(w1), intplot)
@@ -642,6 +644,7 @@ def ncplot(x, vars=None):
                     dynamic=True,
                     logz=log,
                     cmap="viridis",
+                    rasterize = True,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
             else:
