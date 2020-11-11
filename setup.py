@@ -1,11 +1,6 @@
 from setuptools import Command, find_packages, setup
 
-DESCRIPTION = "Automatic plotting of NetCDF files in Python and on the command line"
-LONG_DESCRIPTION = """
-
-**ncplot** is an easy to use Python (3.6 and above) package for automatically creating interactive plots of the contents of NetCDF files. If you have used ncview, you will know what to expect.
-
-"""
+DESCRIPTION="Easy interactive plotting of NetCDF data"
 
 PROJECT_URLS = {
     "Bug Tracker": "https://github.com/pmlmodelling/ncplot/issues",
@@ -15,11 +10,20 @@ PROJECT_URLS = {
 
 REQUIREMENTS = [i.strip() for i in open("requirements.txt").readlines()]
 
+here = os.path.abspath(os.path.dirname(__file__))
+
+# Use the README file as the description
+try:
+    with io.open(os.path.join(here, '../README.md'), encoding='utf-8') as f:
+        long_description = '\n' + f.read()
+except IOError:
+    long_description = DESCRIPTION
+
 
 setup(name='ncplot',
-      version='0.0.3',
+      version='0.0.4',
       description=DESCRIPTION,
-      long_description=LONG_DESCRIPTION,
+      long_description=long_description,
       python_requires='>=3.6.1',
 
       entry_points={
@@ -27,12 +31,8 @@ setup(name='ncplot',
             'ncplot =ncplot.command_line:main',
         ] },
 
-      #entry_points = 'console_scripts': ['funniest-joke=funniest.command_line:main'] },
-
       classifiers=[
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Operating System :: POSIX :: Linux",
-        "Operating System :: MacOS",
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
