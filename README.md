@@ -28,21 +28,21 @@ pip install git+https://github.com/pmlmodelling/ncplot.git
 
 
 
-The package is made up of a simple easy to use function: ncplot. To visualize everything in a file:
+The package is made up of a simple and easy to use function: view. To visualize everything in a file:
 
 ```sh
-from ncplot import ncplot
+from ncplot import view
 
-ncplot("example.nc")
+view("example.nc")
 
 ```
 
 or to visualize a specific variable or list of variables:
 
 ```sh
-from ncplot import ncplot
+from ncplot import view
 
-ncplot("example.nc", vars)
+view("example.nc", vars)
 
 ```
 
