@@ -45,7 +45,7 @@ ncplot("example.nc", vars)
 
 ```
 
-where vars is a string representing a variable or a list of variables.
+where vars is either a string representing a variable or a list of variables.
 
 
 
