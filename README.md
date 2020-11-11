@@ -49,7 +49,7 @@ ncplot("example.nc", vars)
 where vars is either a string representing a variable or a list of variables.
 
 
-If you want to plot xarray datasets, firest import the xarray accessor, then plot in a similar way to xarray's built in plotting method:
+If you want to plot xarray datasets dataarrays, first import the xarray accessor, then plot in a similar way to xarray's built in plotting method:
 
 
 ```sh
@@ -60,6 +60,7 @@ ds = xr.open_dataset("example.nc")
 ds.ncplot.ncplot()
 
 ```
+
 
 
 
@@ -74,6 +75,7 @@ Command line usage is as simple as:
 ncplot example.nc
 
 ```
+
 
 
 
