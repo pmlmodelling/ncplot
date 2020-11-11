@@ -8,7 +8,7 @@
 
 An easy to use Python (3.6 and above) package for quickly plotting the contents of NetCDF files or xarray datasets. 
 
-This package is designed to work with CF compliant data. 
+This package is designed to work with [CF](https://cfconventions.org/) compliant NetCDF data. 
 
 ## Installation
 
@@ -45,6 +45,7 @@ ncplot("example.nc", vars)
 ```
 
 where vars is a string representing a variable or a list of variables.
+
 
 
 
