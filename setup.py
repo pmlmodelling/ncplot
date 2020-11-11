@@ -1,3 +1,5 @@
+import os
+import io
 from setuptools import Command, find_packages, setup
 
 DESCRIPTION="Easy interactive plotting of NetCDF data"
@@ -24,6 +26,8 @@ setup(name='ncplot',
       version='0.0.4',
       description=DESCRIPTION,
       long_description=long_description,
+      long_description_content_type='text/markdown',
+
       python_requires='>=3.6.1',
 
       entry_points={
