@@ -1,5 +1,5 @@
 
-# ncplot - Automatic interactive plotting of NetCDF files in Python 
+# ncplot - Easy interactive viewin of NetCDF files in Python 
 
 
 
@@ -57,7 +57,7 @@ import ncplot.xarray
 import xarray as xr
 
 ds = xr.open_dataset("example.nc") 
-ds.ncplot.ncplot()
+ds.ncplot.view()
 
 ```
 
