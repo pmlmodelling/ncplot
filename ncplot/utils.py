@@ -46,26 +46,37 @@ def get_dims(ff):
             ds = xr.open_dataset(ff)
 
         ff_dims = list(ds.coords)
-        var = [x for x in ds.variables.keys() if x not in ff_dims][0]
+
+        max_dim = 0
+
+        vars = [x for x in list(ds.variables.keys()) if x not in list(ds.coords)]
+
         ds = ds.metpy.parse_cf()
 
-        try:
-            for x in ds[var].metpy.coordinates("longitude"):
-                lon_name = x.name
-        except:
-            lon_name = None
+        for var in vars:
+        #    if len(ds[vv].coords) > max_dim:
+        #        var = vv
+        #        max_dim = len(ds[vv].dims) > max_dim
 
-        try:
-            for x in ds[var].metpy.coordinates("latitude"):
-                lat_name = x.name
-        except:
-            lat_name = None
+        #print(var)
 
-        try:
-            for x in ds[var].metpy.coordinates("time"):
-                time_name = x.name
-        except:
-            time_name = None
+            try:
+                for x in ds[var].metpy.coordinates("longitude"):
+                    lon_name = x.name
+            except:
+                lon_name = lon_name
+
+            try:
+                for x in ds[var].metpy.coordinates("latitude"):
+                    lat_name = x.name
+            except:
+                lat_name = lat_name
+
+            try:
+                for x in ds[var].metpy.coordinates("time"):
+                    time_name = x.name
+            except:
+                time_name = lat_name
 
         # it's possible metpy will not parse lat/lon properly. In this case check if "lon"/"lat" appear in dims once
         if lon_name is None or lat_name is None:
