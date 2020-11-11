@@ -123,6 +123,9 @@ def ncplot(x, vars=None):
 
     log = False
     panel = False
+    if  type(x) is xr.core.dataarray.DataArray:
+        x = x.to_dataset()
+
     if type(x) is xr.core.dataset.Dataset:
         xr_file = True
     else:
