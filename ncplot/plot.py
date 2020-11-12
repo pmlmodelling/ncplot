@@ -367,14 +367,9 @@ def view(x, vars=None):
         if case1 <= 1:
 
             if type(vars) is list:
-                intplot = df.drop_duplicates().hvplot.heatmap(
-                    x=x_var,
-                    y=y_var,
-                    C="value",
-                    groupby="variable",
-                    colorbar=True,
-                    cmap="viridis",
-                )
+
+                intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
+
             else:
 
                 self_max = ds.rename({vars: "x"}).x.max()
@@ -382,29 +377,17 @@ def view(x, vars=None):
                 v_max = float(max(self_max.values, -self_min.values))
 
                 if self_max > 0 and self_min < 0:
+                    intplot = ds.hvplot.image(
+                        x_var,
+                        y_var,
+                        vars,
+                        cmap="RdBu_r",
+                        rasterize=True,
+                        responsive=(in_notebook() is False),
+                    ).redim.range(**{vars: (-v_max, v_max)})
 
-                    intplot = (
-                        df.drop_duplicates()
-                        .hvplot.heatmap(
-                            x=x_var,
-                            y=y_var,
-                            C="value",
-                            groupby="variable",
-                            colorbar=True,
-                            cmap="RdBu_r",
-                            responsive=(in_notebook() is False),
-                        )
-                        .opts(clim=(-v_max, v_max))
-                    )
                 else:
-                    intplot = df.drop_duplicates().hvplot.heatmap(
-                        x=x_var,
-                        y=y_var,
-                        C="value",
-                        groupby="variable",
-                        colorbar=True,
-                        cmap="viridis",
-                    )
+                    intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
 
             if in_notebook():
                 return intplot
