@@ -14,7 +14,12 @@ def check_lon(x, ds):
     news = ds.coords[x]
     possibles = [i for i in list(news.coords) if i in dims]
 
+    for pp in possibles:
+        if "lon" in pp:
+            return pp
+
     if len(possibles) == 2:
+        # longitude should come after latitude alaphabetically
         if possibles[0] < possibles[1]:
             return possibles[0]
         else:
@@ -28,7 +33,13 @@ def check_lat(x, ds):
     news = ds.coords[x]
     possibles = [i for i in list(news.coords) if i in dims]
 
+    for pp in possibles:
+        if "lat" in pp:
+            return pp
+
     if len(possibles) == 2:
+        # longitude should come before latitude alaphabetically
+
         if possibles[0] > possibles[1]:
             return possibles[0]
         else:
@@ -54,11 +65,6 @@ def get_dims(ff):
         ds = ds.metpy.parse_cf()
 
         for var in vars:
-        #    if len(ds[vv].coords) > max_dim:
-        #        var = vv
-        #        max_dim = len(ds[vv].dims) > max_dim
-
-        #print(var)
 
             try:
                 for x in ds[var].metpy.coordinates("longitude"):

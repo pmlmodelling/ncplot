@@ -2,8 +2,6 @@ import sys
 from threading import Thread
 
 from cartopy import crs
-import geoviews
-import cartopy
 import time
 import holoviews as hv
 import panel as pn
@@ -31,13 +29,13 @@ def get_coastline(ds, lon_name, lat_name):
     lat_max = ds[lat_name].values.max()
     lat_min = ds[lat_name].values.min()
 
-    if  ((lon_max - lon_min) * (lat_max - lat_min))/(360**2) < 0.0016:
-        return '10m'
+    if ((lon_max - lon_min) * (lat_max - lat_min)) / (360 ** 2) < 0.0016:
+        return "10m"
 
-    if  ((lon_max - lon_min) * (lat_max - lat_min))/(360**2) < 0.25:
-        return '50m'
+    if ((lon_max - lon_min) * (lat_max - lat_min)) / (360 ** 2) < 0.25:
+        return "50m"
 
-    return '110m'
+    return "110m"
 
 
 def change_coords(dx):
@@ -111,7 +109,6 @@ def in_notebook():
     return "ipykernel" in sys.modules
 
 
-
 def view(x, vars=None):
     """
     Plot the contents of a NetCDF file
@@ -124,9 +121,10 @@ def view(x, vars=None):
 
     """
 
+    coastline = True
     log = False
     panel = False
-    if  type(x) is xr.core.dataarray.DataArray:
+    if type(x) is xr.core.dataarray.DataArray:
         x = x.to_dataset()
 
     if type(x) is xr.core.dataset.Dataset:
@@ -145,18 +143,55 @@ def view(x, vars=None):
 
     quadmesh = False
 
-    if is_curvilinear(ds):
-        ds = change_coords(ds)
-        quadmesh = True
-
     df_dims = get_dims(ds)
     # figure out number of points
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
 
+    if quadmesh is False and lat_name is not None:
+        lats = ds[lat_name].values
+
+        max_step = np.max([np.abs(x) for x in (lats[0:-2] - lats[1:-1])])
+        min_step = np.min([np.abs(x) for x in (lats[0:-2] - lats[1:-1])])
+        if min_step == 0:
+            quadmesh = True
+        else:
+            if max_step / min_step > 1.001:
+                quadmesh = True
+
+    switch_coords = False
+
     if quadmesh:
-        lon_name = check_lon(lon_name, ds)
-        lat_name = check_lat(lat_name, ds)
+        switch_coords = True
+        if len(np.shape(ds[lon_name].values)) == 1:
+            switch_coords = False
+
+        if switch_coords:
+            if lon_name != check_lon(lon_name, ds):
+                lon_name = check_lon(lon_name, ds)
+                switch_coords = False
+                coastline = False
+            if lat_name != check_lat(lat_name, ds):
+                lat_name = check_lat(lat_name, ds)
+
+    if "long_name" in ds[lon_name]:
+        if "rotate" in ds[lon_name].long_name:
+            coastline = False
+
+        if "pole" in ds[lon_name].long_name:
+            coastline = False
+
+    if switch_coords:
+        orig_coords = list(ds.coords)
+        ds = change_coords(ds)
+        new_coords = list(ds.coords)
+        quadmesh = True
+        df_dims = get_dims(ds)
+        # figure out number of points
+        lon_name = df_dims.longitude[0]
+        lat_name = df_dims.latitude[0]
+        if orig_coords != new_coords:
+            coastline = False
 
     n_points = 1
     if lon_name is not None:
@@ -228,7 +263,6 @@ def view(x, vars=None):
     if type(vars) is list:
         if len(vars) == 1:
             vars = vars[0]
-
 
     if type(vars) is list:
         for vv in vars:
@@ -469,7 +503,6 @@ def view(x, vars=None):
                     )
                     return None
 
-
     if (n_times > 1) and (n_points < 2) and (n_levels <= 1):
 
         if type(vars) is str:
@@ -546,10 +579,17 @@ def view(x, vars=None):
 
     if (n_points > 1) and (n_levels >= 1) and (type(vars) is list):
 
-        if is_curvilinear(ds):
+        if quadmesh:
 
-            coastline = get_coastline(ds, lon_name, lat_name)
+            if coastline:
+                coastline = get_coastline(ds, lon_name, lat_name)
+                projection = ccrs.PlateCarree()
+            else:
+                projection = None
 
+            print(lon_name)
+            print(lat_name)
+            print(vars)
             intplot = ds.hvplot.quadmesh(
                 lon_name,
                 lat_name,
@@ -557,14 +597,18 @@ def view(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 logz=log,
-                coastline = coastline,
-                projection=ccrs.PlateCarree(),
-                rasterize = True,
+                coastline=coastline,
+                projection=projection,
+                rasterize=True,
                 responsive=in_notebook() is False,
             )
         else:
 
-            coastline = get_coastline(ds, lon_name, lat_name)
+            if coastline:
+                coastline = get_coastline(ds, lon_name, lat_name)
+                projection = ccrs.PlateCarree()
+            else:
+                projection = None
             intplot = ds.hvplot.image(
                 lon_name,
                 lat_name,
@@ -572,8 +616,8 @@ def view(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 logz=log,
-                coastline = coastline,
-                projection=ccrs.PlateCarree(),
+                coastline=coastline,
+                projection=projection,
                 responsive=in_notebook() is False,
             )
 
@@ -598,8 +642,13 @@ def view(x, vars=None):
         v_max = max(self_max.values, -self_min.values)
 
         if (self_max.values > 0) and (self_min.values < 0):
-            if is_curvilinear(ds):
-                coastline = get_coastline(ds, lon_name, lat_name)
+            if quadmesh:
+                if coastline:
+                    coastline = get_coastline(ds, lon_name, lat_name)
+                    projection = ccrs.PlateCarree()
+                else:
+                    projection = None
+
                 intplot = ds.hvplot.quadmesh(
                     lon_name,
                     lat_name,
@@ -607,20 +656,27 @@ def view(x, vars=None):
                     dynamic=True,
                     logz=log,
                     cmap="RdBu_r",
-                    rasterize = True,
+                    coastline=coastline,
+                    projection=projection,
+                    rasterize=True,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
                 # intplot = pn.Row(pn.WidgetBox(w1), intplot)
             else:
-                coastline = get_coastline(ds, lon_name, lat_name)
+                if coastline:
+                    coastline = get_coastline(ds, lon_name, lat_name)
+                    projection = ccrs.PlateCarree()
+                else:
+                    projection = None
+
                 intplot = ds.hvplot.image(
                     lon_name,
                     lat_name,
                     vars,
                     dynamic=True,
                     logz=log,
-                    coastline = coastline,
-                    projection=ccrs.PlateCarree(),
+                    coastline=coastline,
+                    projection=projection,
                     cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
@@ -636,7 +692,12 @@ def view(x, vars=None):
             return None
 
         else:
-            if is_curvilinear(ds):
+            if quadmesh:
+                if coastline:
+                    coastline = get_coastline(ds, lon_name, lat_name)
+                    projection = ccrs.PlateCarree()
+                else:
+                    projection = None
                 intplot = ds.hvplot.quadmesh(
                     lon_name,
                     lat_name,
@@ -644,12 +705,19 @@ def view(x, vars=None):
                     dynamic=True,
                     logz=log,
                     cmap="viridis",
-                    rasterize = True,
+                    coastline=coastline,
+                    projection=projection,
+                    rasterize=True,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
             else:
 
-                coastline = get_coastline(ds, lon_name, lat_name)
+                if coastline:
+                    coastline = get_coastline(ds, lon_name, lat_name)
+                    projection = ccrs.PlateCarree()
+                else:
+                    projection = None
+
                 intplot = ds.hvplot.image(
                     lon_name,
                     lat_name,
@@ -657,8 +725,8 @@ def view(x, vars=None):
                     dynamic=True,
                     logz=log,
                     cmap="viridis",
-                    coastline = coastline,
-                    projection=ccrs.PlateCarree(),
+                    coastline=coastline,
+                    projection=projection,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
 
