@@ -122,8 +122,6 @@ def view(x, vars=None):
     """
 
     coastline = True
-    log = False
-    panel = False
     if type(x) is xr.core.dataarray.DataArray:
         x = x.to_dataset()
 
@@ -307,41 +305,21 @@ def view(x, vars=None):
 
         df = df.loc[:, selection].melt(x_var).drop_duplicates().set_index(x_var)
 
-        if panel:
-            intplot = df.hvplot(
-                by="variable",
-                logy=log,
-                subplots=True,
-                shared_axes=False,
-                responsive=(in_notebook() is False),
-            )
-            if in_notebook():
-                return intplot
+        intplot = df.hvplot(
+            groupby="variable",
+            dynamic=True,
+            responsive=(in_notebook() is False),
+        )
+        if in_notebook():
+            return intplot
 
-            t = Thread(target=ctrc)
-            t.start()
+        t = Thread(target=ctrc)
+        t.start()
 
-            bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                threaded=False
-            )
-            return None
-        else:
-            intplot = df.hvplot(
-                groupby="variable",
-                logy=log,
-                dynamic=True,
-                responsive=(in_notebook() is False),
-            )
-            if in_notebook():
-                return intplot
-
-            t = Thread(target=ctrc)
-            t.start()
-
-            bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                threaded=False
-            )
-            return None
+        bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
+            threaded=False
+        )
+        return None
 
     # heat map where 2 coords have more than 1 value, not a spatial map
     if len([x for x in coord_df.length if x > 1]) == 2:
@@ -508,57 +486,29 @@ def view(x, vars=None):
 
         df = df.drop(columns=to_go).drop_duplicates()
 
-        if panel:
-            intplot = (
-                df.set_index(time_name)
-                .loc[:, vars]
-                .reset_index()
-                .melt(time_name)
-                .set_index(time_name)
-                .hvplot(
-                    by="variable",
-                    logy=log,
-                    subplots=True,
-                    shared_axes=False,
-                    responsive=(in_notebook() is False),
-                )
+        intplot = (
+            df.reset_index()
+            .set_index(time_name)
+            .loc[:, vars]
+            .reset_index()
+            .melt(time_name)
+            .set_index(time_name)
+            .hvplot(
+                groupby="variable",
+                dynamic=True,
+                responsive=(in_notebook() is False),
             )
-            if in_notebook():
-                return intplot
+        )
+        if in_notebook():
+            return intplot
 
-            t = Thread(target=ctrc)
-            t.start()
+        t = Thread(target=ctrc)
+        t.start()
 
-            bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                threaded=False
-            )
-            return None
-
-        else:
-            intplot = (
-                df.reset_index()
-                .set_index(time_name)
-                .loc[:, vars]
-                .reset_index()
-                .melt(time_name)
-                .set_index(time_name)
-                .hvplot(
-                    groupby="variable",
-                    logy=log,
-                    dynamic=True,
-                    responsive=(in_notebook() is False),
-                )
-            )
-            if in_notebook():
-                return intplot
-
-            t = Thread(target=ctrc)
-            t.start()
-
-            bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                threaded=False
-            )
-            return None
+        bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
+            threaded=False
+        )
+        return None
 
     if (n_points > 1) and (n_levels >= 1) and (type(vars) is list):
 
@@ -579,7 +529,6 @@ def view(x, vars=None):
                 vars,
                 dynamic=True,
                 cmap="viridis",
-                logz=log,
                 coastline=coastline,
                 projection=projection,
                 rasterize=True,
@@ -598,7 +547,6 @@ def view(x, vars=None):
                 vars,
                 dynamic=True,
                 cmap="viridis",
-                logz=log,
                 coastline=coastline,
                 projection=projection,
                 responsive=in_notebook() is False,
@@ -637,7 +585,6 @@ def view(x, vars=None):
                     lat_name,
                     vars,
                     dynamic=True,
-                    logz=log,
                     cmap="RdBu_r",
                     coastline=coastline,
                     projection=projection,
@@ -657,7 +604,6 @@ def view(x, vars=None):
                     lat_name,
                     vars,
                     dynamic=True,
-                    logz=log,
                     coastline=coastline,
                     projection=projection,
                     cmap="RdBu_r",
@@ -686,7 +632,6 @@ def view(x, vars=None):
                     lat_name,
                     vars,
                     dynamic=True,
-                    logz=log,
                     cmap="viridis",
                     coastline=coastline,
                     projection=projection,
@@ -706,7 +651,6 @@ def view(x, vars=None):
                     lat_name,
                     vars,
                     dynamic=True,
-                    logz=log,
                     cmap="viridis",
                     coastline=coastline,
                     projection=projection,
