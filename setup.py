@@ -51,6 +51,7 @@ setup(name='ncplot',
       packages = ["ncplot"],
       setup_requires=[
         'setuptools',
+        'numpy',
         'setuptools-git',
         'wheel',
     ],
