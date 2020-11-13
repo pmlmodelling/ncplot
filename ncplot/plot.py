@@ -223,6 +223,7 @@ def view(x, vars=None):
 
     # time name maybe cannot be parsed. If "time" is among the coords, use that
 
+
     if time_name is None:
         candidates = list()
         n_candidates = 0
@@ -265,6 +266,7 @@ def view(x, vars=None):
             if cc in list(ds.dims):
                 ds = ds.squeeze(cc, drop=True)
 
+
     if type(vars) is list:
         new_vars = []
         for vv in vars:
@@ -288,6 +290,7 @@ def view(x, vars=None):
             raise ValueError(f"{vars} is not a valid variable")
     # Case when all you can plot is a time series
 
+
     # heat map 1
 
     # get rid of coordinates without multiple values
@@ -305,9 +308,20 @@ def view(x, vars=None):
         {"coord": coord_list, "length": [len(ds.coords[x].values) for x in coord_list]}
     )
 
+    # work out if it should be a spatial map
+
+    spatial_map = False
+
     # line plot
 
-    if len([x for x in coord_df.length if x > 1]) == 1:
+    if lon_name is not None and lat_name is not None:
+        if (len(ds[lon_name].values) > 1) and (len(ds[lat_name].values) > 1):
+            spatial_map = True
+
+
+
+
+    if len([x for x in coord_df.length if x > 1]) == 1 and spatial_map is False:
 
         df = ds.to_dataframe().reset_index()
         if type(vars) is str:
@@ -339,7 +353,7 @@ def view(x, vars=None):
         return None
 
     # heat map where 2 coords have more than 1 value, not a spatial map
-    if len([x for x in coord_df.length if x > 1]) == 2:
+    if len([x for x in coord_df.length if x > 1]) == 2 and spatial_map is False:
 
         df = ds.to_dataframe().reset_index()
         x_var = coord_df.query("length > 1").reset_index().coord[0]
@@ -393,6 +407,7 @@ def view(x, vars=None):
                 threaded=False
             )
             return None
+    print("here")
 
     # heat map where 3 coords have more than 1 value, and one of them is time. Not a spatial map though
     if len([x for x in coord_df.length if x > 1]) == 3:
@@ -565,6 +580,7 @@ def view(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 coastline=coastline,
+                rasterize=True,
                 projection=projection,
                 responsive=in_notebook() is False,
             )
@@ -623,6 +639,7 @@ def view(x, vars=None):
                     dynamic=True,
                     coastline=coastline,
                     projection=projection,
+                    rasterize=True,
                     cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
@@ -670,6 +687,7 @@ def view(x, vars=None):
                     dynamic=True,
                     cmap="viridis",
                     coastline=coastline,
+                    rasterize=True,
                     projection=projection,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
