@@ -10,16 +10,16 @@ class NCAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def view(self, **kwargs):
+    def view(self, vars):
         """Plot data """
-        return view(self._obj, **kwargs)
+        return view(self._obj, vars)
 
 @xr.register_dataarray_accessor('ncplot')
 class NCAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def view(self, **kwargs):
+    def view(self, vars):
         """Plot data """
-        return view(self._obj, **kwargs)
+        return view(self._obj, vars)
 
