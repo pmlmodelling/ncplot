@@ -159,6 +159,13 @@ def view(x, vars=None):
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
 
+    if "long_name" in ds[lon_name].attrs:
+        if "rotate" in ds[lon_name].long_name:
+            coastline = False
+
+        if "pole" in ds[lon_name].long_name:
+            coastline = False
+
     if quadmesh is False and lat_name is not None:
         lats = ds[lat_name].values
 
@@ -407,7 +414,6 @@ def view(x, vars=None):
                 threaded=False
             )
             return None
-    print("here")
 
     # heat map where 3 coords have more than 1 value, and one of them is time. Not a spatial map though
     if len([x for x in coord_df.length if x > 1]) == 3:
