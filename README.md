@@ -1,5 +1,5 @@
 
-# ncplot - Easy interactive viewin of NetCDF files in Python 
+# ncplot - Easy interactive viewing of NetCDF files in Python 
 
 
 
