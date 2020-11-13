@@ -1,3 +1,4 @@
+
 import sys
 from threading import Thread
 
@@ -45,6 +46,7 @@ def change_coords(dx):
     """
     Some model output will have repeated zeros as lon/lat. This will mess up quadmesh. Replace lon/lat with indices
     """
+
 
     ds = dx.copy()
     df_dims = get_dims(ds)
@@ -153,6 +155,9 @@ def view(x, vars=None):
         ds = x
 
     quadmesh = False
+
+    if len(list(ds.dims)) + len(list(ds.coords)) == 0:
+        raise ValueError("There are no dimensions or coordinates in the dataset!")
 
     df_dims = get_dims(ds)
     # figure out number of points
