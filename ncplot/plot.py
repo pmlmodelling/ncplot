@@ -23,6 +23,9 @@ hv.Store.renderers
 
 
 def get_coastline(ds, lon_name, lat_name):
+    """
+    A function to work out an appropriate coastline resolution
+    """
     lon_max = ds[lon_name].values.max()
     lon_min = ds[lon_name].values.min()
 
@@ -39,6 +42,9 @@ def get_coastline(ds, lon_name, lat_name):
 
 
 def change_coords(dx):
+    """
+    Some model output will have repeated zeros as lon/lat. This will mess up quadmesh. Replace lon/lat with indices
+    """
 
     ds = dx.copy()
     df_dims = get_dims(ds)
@@ -82,6 +88,10 @@ def change_coords(dx):
 
 
 def is_curvilinear(ds):
+    """
+    A function originally in nctoolkit, which used CDO to figure out if a grid was curvilinear. This should
+    be rename to something like is_quadmesh
+    """
 
     ds_dims = get_dims(ds)
     if ds_dims.longitude.values[0] is None or ds_dims.latitude.values[0] is None:
@@ -94,6 +104,9 @@ def is_curvilinear(ds):
 
 
 def ctrc():
+    """
+    A basic control to send a message to the terminal
+    """
     time.sleep(1)
     print("Press Ctrl+C to stop plotting server")
 
@@ -190,6 +203,10 @@ def view(x, vars=None):
         lat_name = df_dims.latitude[0]
         if orig_coords != new_coords:
             coastline = False
+
+    if lon_name is not None:
+        if len(ds[lon_name].dims) > 1:
+            quadmesh = True
 
     n_points = 1
     if lon_name is not None:
@@ -667,6 +684,8 @@ def view(x, vars=None):
             )
 
             return None
+
+    # it's possible that the data has not spatial or temporal coordinates. Do something about it....
 
     # Throw an error if case has not plotting method available yet
     # right now this only seems to be when you have lon/lat/time/levels and multiple variables
