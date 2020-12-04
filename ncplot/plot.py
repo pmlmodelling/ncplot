@@ -164,23 +164,26 @@ def view(x, vars=None):
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
 
-    if "long_name" in ds[lon_name].attrs:
-        if "rotate" in ds[lon_name].long_name:
-            coastline = False
 
-        if "pole" in ds[lon_name].long_name:
-            coastline = False
+    if lon_name is not None:
+        if "long_name" in ds[lon_name].attrs:
+            if "rotate" in ds[lon_name].long_name:
+                coastline = False
+
+            if "pole" in ds[lon_name].long_name:
+                coastline = False
 
     if quadmesh is False and lat_name is not None:
         lats = ds[lat_name].values
+        if len(lats) > 1:
 
-        max_step = np.max([np.abs(x) for x in (lats[0:-2] - lats[1:-1])])
-        min_step = np.min([np.abs(x) for x in (lats[0:-2] - lats[1:-1])])
-        if min_step == 0:
-            quadmesh = True
-        else:
-            if max_step / min_step > 1.001:
+            max_step = np.max([np.abs(x) for x in (lats[0:-2] - lats[1:-1])])
+            min_step = np.min([np.abs(x) for x in (lats[0:-2] - lats[1:-1])])
+            if min_step == 0:
                 quadmesh = True
+            else:
+                if max_step / min_step > 1.001:
+                    quadmesh = True
 
     switch_coords = False
 
@@ -196,13 +199,6 @@ def view(x, vars=None):
                 coastline = False
             if lat_name != check_lat(lat_name, ds):
                 lat_name = check_lat(lat_name, ds)
-
-    if "long_name" in ds[lon_name]:
-        if "rotate" in ds[lon_name].long_name:
-            coastline = False
-
-        if "pole" in ds[lon_name].long_name:
-            coastline = False
 
     if switch_coords:
         orig_coords = list(ds.coords)
@@ -327,8 +323,10 @@ def view(x, vars=None):
     # line plot
 
     if lon_name is not None and lat_name is not None:
-        if (len(ds[lon_name].values) > 1) and (len(ds[lat_name].values) > 1):
-            spatial_map = True
+
+        if lon_name in list(ds.coords) and lat_name in list(ds.coords):
+            if (len(ds[lon_name].values) > 1) and (len(ds[lat_name].values) > 1):
+                spatial_map = True
 
 
 
@@ -397,18 +395,33 @@ def view(x, vars=None):
                 self_min = ds.rename({vars: "x"}).x.min()
                 v_max = float(max(self_max.values, -self_min.values))
 
+                if x_var == time_name:
+                    quadmesh = True
+
                 if self_max > 0 and self_min < 0:
-                    intplot = ds.hvplot.image(
-                        x_var,
-                        y_var,
-                        vars,
-                        cmap="RdBu_r",
-                        rasterize=True,
-                        responsive=(in_notebook() is False),
-                    ).redim.range(**{vars: (-v_max, v_max)})
+                    if quadmesh:
+                        intplot = ds.hvplot.quadmesh(
+                            x_var,
+                            y_var,
+                            vars,
+                            cmap="RdBu_r",
+                            responsive=(in_notebook() is False),
+                        ).redim.range(**{vars: (-v_max, v_max)})
+                    else:
+                        intplot = ds.hvplot.image(
+                            x_var,
+                            y_var,
+                            vars,
+                            cmap="RdBu_r",
+                            rasterize=True,
+                            responsive=(in_notebook() is False),
+                        ).redim.range(**{vars: (-v_max, v_max)})
 
                 else:
-                    intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
+                    if quadmesh:
+                        intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis")
+                    else:
+                        intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
 
             if in_notebook():
                 return intplot
