@@ -10,7 +10,7 @@ class NCAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def view(self, vars):
+    def view(self, vars = None):
         """Plot data """
         return view(self._obj, vars)
 
@@ -19,7 +19,7 @@ class NCAccessor:
     def __init__(self, xarray_obj):
         self._obj = xarray_obj
 
-    def view(self, vars):
+    def view(self, vars = None):
         """Plot data """
         return view(self._obj, vars)
 
