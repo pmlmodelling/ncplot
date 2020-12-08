@@ -386,8 +386,24 @@ def view(x, vars=None):
         if case1 <= 1:
 
             if type(vars) is list:
+                # figure out if it needs to be quadmesh
+                if x_var == time_name:
+                    quadmesh = True
+                x_vals = ds[x_var].values
 
-                intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
+                if len(x_vals) > 2:
+
+                    if np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float") -  np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float") > 0:
+                        quadmesh = True
+                y_vals = ds[y_var].values
+                if len(y_vals) > 2:
+                    if np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float") -  np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float") > 0:
+                        quadmesh = True
+
+                if quadmesh:
+                    intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis")
+                else:
+                    intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
 
             else:
 
@@ -395,8 +411,19 @@ def view(x, vars=None):
                 self_min = ds.rename({vars: "x"}).x.min()
                 v_max = float(max(self_max.values, -self_min.values))
 
+                # figure out if it needs to be quadmesh
                 if x_var == time_name:
                     quadmesh = True
+                x_vals = ds[x_var].values
+
+                if len(x_vals) > 2:
+                    if np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float") -  np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float") > 0:
+                        quadmesh = True
+                y_vals = ds[y_var].values
+
+                if len(y_vals) > 2:
+                    if np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float") -  np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float") > 0:
+                        quadmesh = True
 
                 if self_max > 0 and self_min < 0:
                     if quadmesh:
@@ -461,8 +488,6 @@ def view(x, vars=None):
                 time_in = True
                 possible += 1
 
-        # if possible > 1:
-        #    time_in = False
 
         if time_name in coord_list and time_in and non_map:
 
@@ -502,14 +527,25 @@ def view(x, vars=None):
 
                 if case1 <= 1:
 
-                    intplot = df.drop_duplicates().hvplot.heatmap(
-                        x=x_var,
-                        y=y_var,
-                        C="value",
-                        groupby=["variable", time_name],
-                        cmap="viridis",
-                        colorbar=True,
-                    )
+                    # this could also do with a blue to red option
+
+                    # figure out if it should be quadmesh
+                    quadmesh = False
+                    x_vals = ds[x_var].values
+                    if len(x_vals)> 2:
+                        if np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float") -  np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float") > 0:
+                            quadmesh = True
+
+                    y_vals = ds[y_var].values
+                    if len(y_vals) > 2:
+                        if np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float") -  np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float") > 0:
+                            quadmesh = True
+
+                    if quadmesh:
+                        intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis", rasterize = True)
+                    else:
+                        intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis", rasterize = True)
+
                     if in_notebook():
                         return intplot
 
