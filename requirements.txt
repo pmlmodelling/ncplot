@@ -6,5 +6,6 @@ panel
 pandas
 metpy
 geoviews
+pyproj
 cartopy
 
