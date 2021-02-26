@@ -1,7 +1,7 @@
 numpy
 xarray<=0.16.2
 netCDF4
-hvplot
+hvplot<=0.5.2
 holoviews<=1.13.5
 bokeh<=2.2.3
 panel
