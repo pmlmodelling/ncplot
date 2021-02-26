@@ -10,6 +10,9 @@ metpy_log.setLevel(logging.CRITICAL)
 
 
 def check_lon(x, ds):
+    """
+    A function to change the lon coord identified in case it cannot be represented by hvplot
+    """
     dims = list(ds.dims)
     news = ds.coords[x]
     possibles = [i for i in list(news.coords) if i in dims]
@@ -29,6 +32,9 @@ def check_lon(x, ds):
 
 
 def check_lat(x, ds):
+    """
+    A function to change the lat coord identified in case it cannot be represented by hvplot
+    """
     dims = list(ds.dims)
     news = ds.coords[x]
     possibles = [i for i in list(news.coords) if i in dims]
@@ -49,6 +55,9 @@ def check_lat(x, ds):
 
 
 def get_dims(ff):
+    """
+    Extract the dimensions of the netcdf file
+    """
 
     try:
         if type(ff) is xr.core.dataset.Dataset:
@@ -158,7 +167,10 @@ def get_dims(ff):
 
 
 def is_curvilinear(ff):
-    """Function to work out if a file contains a curvilinear grid"""
+    """
+    Original CDO function to work out if a grid was curvilinear.
+    Ideally a future version of ncplot should call this when cdo is installed.
+    """
     cdo_result = subprocess.run(
         f"cdo sinfo {ff}", shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE
     )

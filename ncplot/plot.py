@@ -612,9 +612,6 @@ def view(x, vars=None):
             else:
                 projection = None
 
-            print(lon_name)
-            print(lat_name)
-            print(vars)
             intplot = ds.hvplot.quadmesh(
                 lon_name,
                 lat_name,
