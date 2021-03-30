@@ -1,4 +1,3 @@
-
 import sys
 from threading import Thread
 
@@ -46,7 +45,6 @@ def change_coords(dx):
     """
     Some model output will have repeated zeros as lon/lat. This will mess up quadmesh. Replace lon/lat with indices
     """
-
 
     ds = dx.copy()
     df_dims = get_dims(ds)
@@ -154,6 +152,20 @@ def view(x, vars=None):
     else:
         ds = x
 
+    coord_list = list(ds.coords)
+
+    for cc in coord_list:
+        if len(ds[cc].values.ravel()) <= 1:
+            if cc in list(ds.dims):
+                ds = ds.squeeze(cc, drop=True)
+
+    coord_list = list(ds.dims)
+
+    for cc in coord_list:
+        if len(ds[cc].values.ravel()) <= 1:
+            if cc in list(ds.dims):
+                ds = ds.squeeze(cc, drop=True)
+
     quadmesh = False
 
     if len(list(ds.dims)) + len(list(ds.coords)) == 0:
@@ -163,7 +175,6 @@ def view(x, vars=None):
     # figure out number of points
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
-
 
     if lon_name is not None:
         if "long_name" in ds[lon_name].attrs:
@@ -187,6 +198,8 @@ def view(x, vars=None):
 
     switch_coords = False
 
+    rasterize = True
+
     if quadmesh:
         switch_coords = True
         if len(np.shape(ds[lon_name].values)) == 1:
@@ -195,10 +208,15 @@ def view(x, vars=None):
         if switch_coords:
             if lon_name != check_lon(lon_name, ds):
                 lon_name = check_lon(lon_name, ds)
+                rasterize = False
                 switch_coords = False
+                quadmesh = False
                 coastline = False
             if lat_name != check_lat(lat_name, ds):
                 lat_name = check_lat(lat_name, ds)
+                rasterize = False
+                quadmesh = False
+
 
     if switch_coords:
         orig_coords = list(ds.coords)
@@ -211,10 +229,12 @@ def view(x, vars=None):
         lat_name = df_dims.latitude[0]
         if orig_coords != new_coords:
             coastline = False
+            rasterize = False
 
     if lon_name is not None:
         if len(ds[lon_name].dims) > 1:
             quadmesh = True
+
 
     n_points = 1
     if lon_name is not None:
@@ -230,7 +250,6 @@ def view(x, vars=None):
     time_name = df_dims.time[0]
 
     # time name maybe cannot be parsed. If "time" is among the coords, use that
-
 
     if time_name is None:
         candidates = list()
@@ -265,6 +284,7 @@ def view(x, vars=None):
 
         # also must have all of the coordinates...
 
+
     # code below figures out what is a variable, not a coordinate. Could be improved...
 
     coord_list = list(ds.coords)
@@ -273,7 +293,6 @@ def view(x, vars=None):
         if len(ds[cc].values.ravel()) <= 1:
             if cc in list(ds.dims):
                 ds = ds.squeeze(cc, drop=True)
-
 
     if type(vars) is list:
         new_vars = []
@@ -296,8 +315,29 @@ def view(x, vars=None):
     else:
         if vars not in list(ds.variables):
             raise ValueError(f"{vars} is not a valid variable")
-    # Case when all you can plot is a time series
 
+    if (lon_name is not None) and (lat_name is not None) and type(vars) is list:
+        new_vars = []
+        for x in vars:
+
+            dims_required = []
+            for i in list(ds.coords):
+                dims_required+=ds.coords[i].dims
+            dims_required = set(dims_required)
+
+            if (set(ds[x].dims) == dims_required):
+                new_vars.append(x)
+        vars = new_vars
+
+
+    if len(vars) == 1:
+        vars = vars[0]
+
+
+    if (lon_name is None) or (lat_name is None):
+        rasterize = False
+
+    # Case when all you can plot is a time series
 
     # heat map 1
 
@@ -320,6 +360,7 @@ def view(x, vars=None):
 
     spatial_map = False
 
+
     # line plot
 
     if lon_name is not None and lat_name is not None:
@@ -327,8 +368,6 @@ def view(x, vars=None):
         if lon_name in list(ds.coords) and lat_name in list(ds.coords):
             if (len(ds[lon_name].values) > 1) and (len(ds[lat_name].values) > 1):
                 spatial_map = True
-
-
 
 
     if len([x for x in coord_df.length if x > 1]) == 1 and spatial_map is False:
@@ -393,11 +432,19 @@ def view(x, vars=None):
 
                 if len(x_vals) > 2:
 
-                    if np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float") -  np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float") > 0:
+                    if (
+                        np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                        - np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                        > 0
+                    ):
                         quadmesh = True
                 y_vals = ds[y_var].values
                 if len(y_vals) > 2:
-                    if np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float") -  np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float") > 0:
+                    if (
+                        np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                        - np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                        > 0
+                    ):
                         quadmesh = True
 
                 if quadmesh:
@@ -417,12 +464,20 @@ def view(x, vars=None):
                 x_vals = ds[x_var].values
 
                 if len(x_vals) > 2:
-                    if np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float") -  np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float") > 0:
+                    if (
+                        np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                        - np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                        > 0
+                    ):
                         quadmesh = True
                 y_vals = ds[y_var].values
 
                 if len(y_vals) > 2:
-                    if np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float") -  np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float") > 0:
+                    if (
+                        np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                        - np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                        > 0
+                    ):
                         quadmesh = True
 
                 if self_max > 0 and self_min < 0:
@@ -440,7 +495,7 @@ def view(x, vars=None):
                             y_var,
                             vars,
                             cmap="RdBu_r",
-                            rasterize=True,
+                            rasterize=False,
                             responsive=(in_notebook() is False),
                         ).redim.range(**{vars: (-v_max, v_max)})
 
@@ -488,7 +543,6 @@ def view(x, vars=None):
                 time_in = True
                 possible += 1
 
-
         if time_name in coord_list and time_in and non_map:
 
             if coord_df.query("coord == @time_name").length.values > 1:
@@ -532,19 +586,32 @@ def view(x, vars=None):
                     # figure out if it should be quadmesh
                     quadmesh = False
                     x_vals = ds[x_var].values
-                    if len(x_vals)> 2:
-                        if np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float") -  np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float") > 0:
+                    if len(x_vals) > 2:
+                        if (
+                            np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                            - np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                            > 0
+                        ):
                             quadmesh = True
 
                     y_vals = ds[y_var].values
                     if len(y_vals) > 2:
-                        if np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float") -  np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float") > 0:
+                        if (
+                            np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                            - np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                            > 0
+                        ):
                             quadmesh = True
 
                     if quadmesh:
-                        intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis", rasterize = True)
+                        intplot = ds.hvplot.quadmesh(
+                            x_var, y_var, vars, cmap="viridis",
+                            rasterize=True
+                        )
                     else:
-                        intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis", rasterize = True)
+                        intplot = ds.hvplot.image(
+                            x_var, y_var, vars, cmap="viridis", rasterize=False
+                        )
 
                     if in_notebook():
                         return intplot
@@ -555,6 +622,7 @@ def view(x, vars=None):
                         threaded=False
                     )
                     return None
+
 
     if (n_times > 1) and (n_points < 2) and (n_levels <= 1):
 
@@ -602,6 +670,7 @@ def view(x, vars=None):
         )
         return None
 
+
     if (n_points > 1) and (n_levels >= 1) and (type(vars) is list):
 
         if quadmesh:
@@ -620,7 +689,7 @@ def view(x, vars=None):
                 cmap="viridis",
                 coastline=coastline,
                 projection=projection,
-                rasterize=True,
+                rasterize=rasterize,
                 responsive=in_notebook() is False,
             )
         else:
@@ -630,6 +699,7 @@ def view(x, vars=None):
                 projection = ccrs.PlateCarree()
             else:
                 projection = None
+
             intplot = ds.hvplot.image(
                 lon_name,
                 lat_name,
@@ -637,7 +707,7 @@ def view(x, vars=None):
                 dynamic=True,
                 cmap="viridis",
                 coastline=coastline,
-                rasterize=True,
+                rasterize=False,
                 projection=projection,
                 responsive=in_notebook() is False,
             )
@@ -678,7 +748,7 @@ def view(x, vars=None):
                     cmap="RdBu_r",
                     coastline=coastline,
                     projection=projection,
-                    rasterize=True,
+                    rasterize=rasterize,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
                 # intplot = pn.Row(pn.WidgetBox(w1), intplot)
@@ -696,7 +766,7 @@ def view(x, vars=None):
                     dynamic=True,
                     coastline=coastline,
                     projection=projection,
-                    rasterize=True,
+                    rasterize=False,
                     cmap="RdBu_r",
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (-v_max, v_max)})
@@ -726,7 +796,7 @@ def view(x, vars=None):
                     cmap="viridis",
                     coastline=coastline,
                     projection=projection,
-                    rasterize=True,
+                    rasterize=rasterize,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
             else:
@@ -744,7 +814,7 @@ def view(x, vars=None):
                     dynamic=True,
                     cmap="viridis",
                     coastline=coastline,
-                    rasterize=True,
+                    rasterize=False,
                     projection=projection,
                     responsive=(in_notebook() is False),
                 ).redim.range(**{vars: (self_min.values, v_max)})
