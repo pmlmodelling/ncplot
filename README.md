@@ -9,9 +9,15 @@
 
 An easy to use Python (3.6 and above) package for quickly plotting the contents of NetCDF files or xarray datasets in Python or on the command line. 
 
-This package is designed to work with [CF](https://cfconventions.org/) compliant NetCDF data. 
+This package is designed to work with [CF](https://cfconventions.org/) compliant NetCDF data.
 
 ## Installation
+
+To install from conda:
+```sh
+conda install -c conda-forge ncplot
+
+```
 
 To install from pypi:
 ```sh
@@ -22,6 +28,7 @@ Install the development version using using pip:
 ```sh
 pip install git+https://github.com/pmlmodelling/ncplot.git
 ```
+
 
 
 ## How to use in Python
@@ -75,6 +82,8 @@ Command line usage is as simple as:
 ncplot example.nc
 
 ```
+
+
 
 
 
