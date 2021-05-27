@@ -728,8 +728,8 @@ def view(x, vars=None):
             warnings.warn(message="Warning: Only the first variable is mapped")
             vars = vars[0]
 
-        self_max = ds.rename({vars: "x"}).x.max()
-        self_min = ds.rename({vars: "x"}).x.min()
+        self_max = ds.rename({vars: "x_dim12345"}).x_dim12345.max()
+        self_min = ds.rename({vars: "x_dim12345"}).x_dim12345.min()
         v_max = max(self_max.values, -self_min.values)
 
         if (self_max.values > 0) and (self_min.values < 0):
