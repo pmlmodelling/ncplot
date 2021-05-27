@@ -184,6 +184,11 @@ def view(x, vars=None):
             if "pole" in ds[lon_name].long_name:
                 coastline = False
 
+    if len([x for x in ds.coords if "lon" in x]) > len(
+        [x for x in ds.dims if "lon" in x]
+    ):
+        coastline = False
+
     if quadmesh is False and lat_name is not None:
         lats = ds[lat_name].values
         if len(lats) > 1:
@@ -217,7 +222,6 @@ def view(x, vars=None):
                 rasterize = False
                 quadmesh = False
 
-
     if switch_coords:
         orig_coords = list(ds.coords)
         ds = change_coords(ds)
@@ -234,7 +238,6 @@ def view(x, vars=None):
     if lon_name is not None:
         if len(ds[lon_name].dims) > 1:
             quadmesh = True
-
 
     n_points = 1
     if lon_name is not None:
@@ -284,7 +287,6 @@ def view(x, vars=None):
 
         # also must have all of the coordinates...
 
-
     # code below figures out what is a variable, not a coordinate. Could be improved...
 
     coord_list = list(ds.coords)
@@ -322,17 +324,15 @@ def view(x, vars=None):
 
             dims_required = []
             for i in list(ds.coords):
-                dims_required+=ds.coords[i].dims
+                dims_required += ds.coords[i].dims
             dims_required = set(dims_required)
 
-            if (set(ds[x].dims) == dims_required):
+            if set(ds[x].dims) == dims_required:
                 new_vars.append(x)
         vars = new_vars
 
-
     if len(vars) == 1:
         vars = vars[0]
-
 
     if (lon_name is None) or (lat_name is None):
         rasterize = False
@@ -360,7 +360,6 @@ def view(x, vars=None):
 
     spatial_map = False
 
-
     # line plot
 
     if lon_name is not None and lat_name is not None:
@@ -368,7 +367,6 @@ def view(x, vars=None):
         if lon_name in list(ds.coords) and lat_name in list(ds.coords):
             if (len(ds[lon_name].values) > 1) and (len(ds[lat_name].values) > 1):
                 spatial_map = True
-
 
     if len([x for x in coord_df.length if x > 1]) == 1 and spatial_map is False:
 
@@ -605,8 +603,7 @@ def view(x, vars=None):
 
                     if quadmesh:
                         intplot = ds.hvplot.quadmesh(
-                            x_var, y_var, vars, cmap="viridis",
-                            rasterize=True
+                            x_var, y_var, vars, cmap="viridis", rasterize=True
                         )
                     else:
                         intplot = ds.hvplot.image(
@@ -622,7 +619,6 @@ def view(x, vars=None):
                         threaded=False
                     )
                     return None
-
 
     if (n_times > 1) and (n_points < 2) and (n_levels <= 1):
 
@@ -669,7 +665,6 @@ def view(x, vars=None):
             threaded=False
         )
         return None
-
 
     if (n_points > 1) and (n_levels >= 1) and (type(vars) is list):
 
