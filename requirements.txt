@@ -1,9 +1,9 @@
 numpy
-xarray<=0.16.2
+xarray
 netCDF4
-hvplot<=0.5.2
-holoviews<=1.13.5
-bokeh<=2.2.3
+hvplot
+holoviews
+bokeh
 panel
 pandas
 metpy
