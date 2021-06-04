@@ -296,6 +296,7 @@ def view(x, vars=None):
             if cc in list(ds.dims):
                 ds = ds.squeeze(cc, drop=True)
 
+
     if type(vars) is list:
         new_vars = []
         for vv in vars:
@@ -351,6 +352,8 @@ def view(x, vars=None):
                 ds = ds.squeeze(cc, drop=True)
 
     coord_list = list(ds.coords)
+
+    coord_list = [x for x in coord_list if x in list(ds.dims)]
 
     coord_df = pd.DataFrame(
         {"coord": coord_list, "length": [len(ds.coords[x].values) for x in coord_list]}
