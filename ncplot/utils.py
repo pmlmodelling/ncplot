@@ -146,6 +146,9 @@ def get_dims(ff):
 
         times = [x for x in ff_dims if r"time" in x]
         if len(times) > 1:
+            times = [x for x in list(ds.dims)  if x in list(ds.coords) if "time" in x]
+
+        if len(times) != 1:
             raise ValueError("Cannot parse dimension names!")
 
         if len(times) == 0:
