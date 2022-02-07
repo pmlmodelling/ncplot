@@ -52,8 +52,14 @@ def change_coords(dx):
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
 
-    # if there are repeated zeros
-    if len([x for x in ds[lat_name].values[0] if x == 0]) <= 1:
+    lat_df = pd.DataFrame(ds[lat_name].values).melt().groupby("value").size().sort_values(ascending = False).reset_index()
+    lat_df.columns = ["value", "number"]
+
+    if lat_df.number[0]/ lat_df.number[1] < 10:
+    #    switch_coords = True
+
+    ## if there are repeated zeros
+    #if len([x for x in ds[lat_name].values[0] if x == 0]) <= 1:
         return ds
 
     if sum(ds[lon_name].values[0] == ds[lon_name].values[1]) == len(ds[lon_name][0]):
@@ -122,7 +128,7 @@ def in_notebook():
     return "ipykernel" in sys.modules
 
 
-def view(x, vars=None):
+def view(x, vars=None, autoscale = True):
     """
     Plot the contents of a NetCDF file
     Parameters
@@ -222,11 +228,14 @@ def view(x, vars=None):
                 rasterize = False
                 quadmesh = False
 
+
+
+
     if switch_coords:
         orig_coords = list(ds.coords)
         ds = change_coords(ds)
         new_coords = list(ds.coords)
-        quadmesh = True
+        quadmesh = False
         df_dims = get_dims(ds)
         # figure out number of points
         lon_name = df_dims.longitude[0]
@@ -455,9 +464,14 @@ def view(x, vars=None):
 
             else:
 
-                self_max = ds.rename({vars: "x"}).x.max()
-                self_min = ds.rename({vars: "x"}).x.min()
-                v_max = float(max(self_max.values, -self_min.values))
+                if autoscale:
+
+                    self_max = ds.rename({vars: "x"}).x.max()
+                    self_min = ds.rename({vars: "x"}).x.min()
+                    v_max = float(max(self_max.values, -self_min.values))
+                else:
+                    self_max = 1
+                    self_min = 1
 
                 # figure out if it needs to be quadmesh
                 if x_var == time_name:
@@ -726,11 +740,15 @@ def view(x, vars=None):
             warnings.warn(message="Warning: Only the first variable is mapped")
             vars = vars[0]
 
-        self_max = ds.rename({vars: "x_dim12345"}).x_dim12345.max()
-        self_min = ds.rename({vars: "x_dim12345"}).x_dim12345.min()
-        v_max = max(self_max.values, -self_min.values)
+        if autoscale:
+            self_max = ds.rename({vars: "x_dim12345"}).x_dim12345.max()
+            self_min = ds.rename({vars: "x_dim12345"}).x_dim12345.min()
+            v_max = max(self_max.values, -self_min.values)
+        else:
+            self_max = 1
+            self_min = 1
 
-        if (self_max.values > 0) and (self_min.values < 0):
+        if (self_max > 0) and (self_min < 0):
             if quadmesh:
                 if coastline:
                     coastline = get_coastline(ds, lon_name, lat_name)
@@ -738,17 +756,30 @@ def view(x, vars=None):
                 else:
                     projection = None
 
-                intplot = ds.hvplot.quadmesh(
-                    lon_name,
-                    lat_name,
-                    vars,
-                    dynamic=True,
-                    cmap="RdBu_r",
-                    coastline=coastline,
-                    projection=projection,
-                    rasterize=rasterize,
-                    responsive=(in_notebook() is False),
-                ).redim.range(**{vars: (-v_max, v_max)})
+                if autoscale:
+                    intplot = ds.hvplot.quadmesh(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        cmap="RdBu_r",
+                        coastline=coastline,
+                        projection=projection,
+                        rasterize=rasterize,
+                        responsive=(in_notebook() is False),
+                    ).redim.range(**{vars: (-v_max, v_max)})
+                else:
+                    intplot = ds.hvplot.quadmesh(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        cmap="RdBu_r",
+                        coastline=coastline,
+                        projection=projection,
+                        rasterize=rasterize,
+                        responsive=(in_notebook() is False),
+                    )
                 # intplot = pn.Row(pn.WidgetBox(w1), intplot)
             else:
                 if coastline:
@@ -757,17 +788,30 @@ def view(x, vars=None):
                 else:
                     projection = None
 
-                intplot = ds.hvplot.image(
-                    lon_name,
-                    lat_name,
-                    vars,
-                    dynamic=True,
-                    coastline=coastline,
-                    projection=projection,
-                    rasterize=False,
-                    cmap="RdBu_r",
-                    responsive=(in_notebook() is False),
-                ).redim.range(**{vars: (-v_max, v_max)})
+                if autoscale:
+                    intplot = ds.hvplot.image(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        coastline=coastline,
+                        projection=projection,
+                        rasterize=False,
+                        cmap="RdBu_r",
+                        responsive=(in_notebook() is False),
+                    ).redim.range(**{vars: (-v_max, v_max)})
+                else:
+                    intplot = ds.hvplot.image(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        coastline=coastline,
+                        projection=projection,
+                        rasterize=False,
+                        cmap="RdBu_r",
+                        responsive=(in_notebook() is False),
+                    )
 
             if in_notebook():
                 return intplot
@@ -786,17 +830,31 @@ def view(x, vars=None):
                     projection = ccrs.PlateCarree()
                 else:
                     projection = None
-                intplot = ds.hvplot.quadmesh(
-                    lon_name,
-                    lat_name,
-                    vars,
-                    dynamic=True,
-                    cmap="viridis",
-                    coastline=coastline,
-                    projection=projection,
-                    rasterize=rasterize,
-                    responsive=(in_notebook() is False),
-                ).redim.range(**{vars: (self_min.values, v_max)})
+                if autoscale:
+                    intplot = ds.hvplot.quadmesh(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        cmap="viridis",
+                        coastline=coastline,
+                        projection=projection,
+                        rasterize=rasterize,
+                        responsive=(in_notebook() is False),
+                    ).redim.range(**{vars: (self_min.values, v_max)})
+                else:
+                    intplot = ds.hvplot.quadmesh(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        cmap="viridis",
+                        coastline=coastline,
+                        projection=projection,
+                        rasterize=rasterize,
+                        responsive=(in_notebook() is False),
+                    )
+
             else:
 
                 if coastline:
@@ -805,17 +863,33 @@ def view(x, vars=None):
                 else:
                     projection = None
 
-                intplot = ds.hvplot.image(
-                    lon_name,
-                    lat_name,
-                    vars,
-                    dynamic=True,
-                    cmap="viridis",
-                    coastline=coastline,
-                    rasterize=False,
-                    projection=projection,
-                    responsive=(in_notebook() is False),
-                ).redim.range(**{vars: (self_min.values, v_max)})
+                if autoscale:
+                    intplot = ds.hvplot.image(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        cmap="viridis",
+                        coastline=coastline,
+                        rasterize=False,
+                        projection=projection,
+                        responsive=(in_notebook() is False),
+                    ).redim.range(**{vars: (self_min.values, v_max)})
+                else:
+                    intplot = ds.hvplot.image(
+                        lon_name,
+                        lat_name,
+                        vars,
+                        dynamic=True,
+                        cmap="viridis",
+                        coastline=coastline,
+                        rasterize=False,
+                        projection=projection,
+                        responsive=(in_notebook() is False),
+                    )
+
+
+
 
             if in_notebook():
                 return intplot
