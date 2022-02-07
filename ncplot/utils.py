@@ -79,19 +79,19 @@ def get_dims(ff):
                 for x in ds[var].metpy.coordinates("longitude"):
                     lon_name = x.name
             except:
-                lon_name = lon_name
+                lon_name = None
 
             try:
                 for x in ds[var].metpy.coordinates("latitude"):
                     lat_name = x.name
             except:
-                lat_name = lat_name
+                lat_name = None
 
             try:
                 for x in ds[var].metpy.coordinates("time"):
                     time_name = x.name
             except:
-                time_name = time_name
+                time_name = None
 
         # it's possible metpy will not parse lat/lon properly. In this case check if "lon"/"lat" appear in dims once
         if lon_name is None or lat_name is None:
