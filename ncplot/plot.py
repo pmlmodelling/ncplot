@@ -170,6 +170,9 @@ def view(x, vars=None, autoscale=True):
     else:
         ds = x
 
+    if type(vars) is list:
+        ds = ds[vars]
+
     coord_list = list(ds.coords)
 
     for cc in coord_list:
