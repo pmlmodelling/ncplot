@@ -32,10 +32,10 @@ def get_coastline(ds, lon_name, lat_name):
     lat_max = ds[lat_name].values.max()
     lat_min = ds[lat_name].values.min()
 
-    if ((lon_max - lon_min) * (lat_max - lat_min)) / (360 ** 2) < 0.0016:
+    if ((lon_max - lon_min) * (lat_max - lat_min)) / (360**2) < 0.0016:
         return "10m"
 
-    if ((lon_max - lon_min) * (lat_max - lat_min)) / (360 ** 2) < 0.25:
+    if ((lon_max - lon_min) * (lat_max - lat_min)) / (360**2) < 0.25:
         return "50m"
 
     return "110m"
@@ -52,14 +52,21 @@ def change_coords(dx):
     lon_name = df_dims.longitude[0]
     lat_name = df_dims.latitude[0]
 
-    lat_df = pd.DataFrame(ds[lat_name].values).melt().groupby("value").size().sort_values(ascending = False).reset_index()
+    lat_df = (
+        pd.DataFrame(ds[lat_name].values)
+        .melt()
+        .groupby("value")
+        .size()
+        .sort_values(ascending=False)
+        .reset_index()
+    )
     lat_df.columns = ["value", "number"]
 
-    if lat_df.number[0]/ lat_df.number[1] < 10:
-    #    switch_coords = True
+    if lat_df.number[0] / lat_df.number[1] < 10:
+        #    switch_coords = True
 
-    ## if there are repeated zeros
-    #if len([x for x in ds[lat_name].values[0] if x == 0]) <= 1:
+        ## if there are repeated zeros
+        # if len([x for x in ds[lat_name].values[0] if x == 0]) <= 1:
         return ds
 
     if sum(ds[lon_name].values[0] == ds[lon_name].values[1]) == len(ds[lon_name][0]):
@@ -89,6 +96,11 @@ def change_coords(dx):
         ds = ds.rename({lat_name: "y_coord"})
     else:
         ds = ds.rename({lat_name: "y"})
+
+    if "x_coord" in ds.coords:
+        ds["x_coord"] = ds["x"]
+        ds["y_coord"] = ds["y"]
+        ds = ds.rename({"x_coord": "x"}).rename({"y_coord": "y"})
 
     return ds
 
@@ -128,7 +140,7 @@ def in_notebook():
     return "ipykernel" in sys.modules
 
 
-def view(x, vars=None, autoscale = True):
+def view(x, vars=None, autoscale=True):
     """
     Plot the contents of a NetCDF file
     Parameters
@@ -228,9 +240,6 @@ def view(x, vars=None, autoscale = True):
                 rasterize = False
                 quadmesh = False
 
-
-
-
     if switch_coords:
         orig_coords = list(ds.coords)
         ds = change_coords(ds)
@@ -282,6 +291,9 @@ def view(x, vars=None, autoscale = True):
         if len(ds[lat_name].values) > 1:
             n_points += len(ds[lat_name].values)
 
+    if "lon" not in lon_name:
+        coastline = False
+
     ff_dims = list(ds.coords)
 
     possible_others = [x for x in ff_dims if x not in df_dims.columns]
@@ -304,7 +316,6 @@ def view(x, vars=None, autoscale = True):
         if len(ds[cc].values.ravel()) <= 1:
             if cc in list(ds.dims):
                 ds = ds.squeeze(cc, drop=True)
-
 
     if type(vars) is list:
         new_vars = []
@@ -367,6 +378,11 @@ def view(x, vars=None, autoscale = True):
     coord_df = pd.DataFrame(
         {"coord": coord_list, "length": [len(ds.coords[x].values) for x in coord_list]}
     )
+
+    # It's possible there are still 2 time variables in the dimensions which could cause problems...
+
+    for tt in [x for x in ds.coords if "time" in x and x != time_name]:
+        ds = ds.drop_vars(tt)
 
     # work out if it should be a spatial map
 
@@ -887,9 +903,6 @@ def view(x, vars=None, autoscale = True):
                         projection=projection,
                         responsive=(in_notebook() is False),
                     )
-
-
-
 
             if in_notebook():
                 return intplot
