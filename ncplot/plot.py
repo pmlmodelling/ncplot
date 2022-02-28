@@ -294,8 +294,9 @@ def view(x, vars=None, autoscale=True):
         if len(ds[lat_name].values) > 1:
             n_points += len(ds[lat_name].values)
 
-    if "lon" not in lon_name:
-        coastline = False
+    if lon_name is not None:
+        if "lon" not in lon_name:
+            coastline = False
 
     ff_dims = list(ds.coords)
 
@@ -304,7 +305,10 @@ def view(x, vars=None, autoscale=True):
     if len(possible_others) == 0:
         n_levels = 1
     else:
-        n_levels = len(ds[possible_others[0]].values)
+        if ds[possible_others[0]].values.ndim == 0:
+            n_levels = 0
+        else:
+            n_levels = len(ds[possible_others[0]].values)
 
     if vars is None:
         vars = [x for x in list(ds.variables) if x not in ff_dims]
