@@ -10,6 +10,7 @@ import cartopy.crs as ccrs
 import pandas as pd
 import hvplot.pandas
 import hvplot.xarray
+import hvplot
 from bokeh.plotting import show
 import xarray as xr
 import warnings
@@ -129,18 +130,22 @@ def ctrc():
     print("Press Ctrl+C to stop plotting server")
 
 
-def in_notebook():
+def in_notebook(file = None):
     """
     Returns ``True`` if the module is running in IPython kernel,
     ``False`` if in IPython shell or other Python shell.
     """
+
+    if file is not None:
+        return True
+
     if "spyder" in sys.modules:
         return False
 
     return "ipykernel" in sys.modules
 
 
-def view(x, vars=None, autoscale=True):
+def view(x, vars=None, autoscale=True, file = None):
     """
     Plot the contents of a NetCDF file
     Parameters
@@ -150,7 +155,14 @@ def view(x, vars=None, autoscale=True):
     vars : list or str
         Variables you want to plot. Everything will be plotted if this is not supplied
 
+    file : str
+        Name of file if you want to store output
+
     """
+
+    if file is not None:
+        if file.endswith(".html") is False:
+            raise ValueError("File name must end with html")
 
     coastline = True
     if type(x) is xr.core.dataarray.DataArray:
@@ -421,10 +433,14 @@ def view(x, vars=None, autoscale=True):
         intplot = df.hvplot(
             groupby="variable",
             dynamic=True,
-            responsive=(in_notebook() is False),
+            responsive=(in_notebook(file) is False),
         )
-        if in_notebook():
-            return intplot
+        if in_notebook(file):
+            if file is None:
+                return intplot
+            else:
+                hvplot.save(intplot, file)
+                return None
 
         t = Thread(target=ctrc)
         t.start()
@@ -525,7 +541,7 @@ def view(x, vars=None, autoscale=True):
                             y_var,
                             vars,
                             cmap="RdBu_r",
-                            responsive=(in_notebook() is False),
+                            responsive=(in_notebook(file) is False),
                         ).redim.range(**{vars: (-v_max, v_max)})
                     else:
                         intplot = ds.hvplot.image(
@@ -534,7 +550,7 @@ def view(x, vars=None, autoscale=True):
                             vars,
                             cmap="RdBu_r",
                             rasterize=False,
-                            responsive=(in_notebook() is False),
+                            responsive=(in_notebook(file) is False),
                         ).redim.range(**{vars: (-v_max, v_max)})
 
                 else:
@@ -543,8 +559,12 @@ def view(x, vars=None, autoscale=True):
                     else:
                         intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
 
-            if in_notebook():
-                return intplot
+            if in_notebook(file):
+                if file is None:
+                    return intplot
+                else:
+                    hvplot.save(intplot, file)
+                    return None
 
             t = Thread(target=ctrc)
             t.start()
@@ -650,8 +670,12 @@ def view(x, vars=None, autoscale=True):
                             x_var, y_var, vars, cmap="viridis", rasterize=False
                         )
 
-                    if in_notebook():
-                        return intplot
+                    if in_notebook(file):
+                        if file is None:
+                            return intplot
+                        else:
+                            hvplot.save(intplot, file)
+                            return None
 
                     t = Thread(target=ctrc)
                     t.start()
@@ -692,11 +716,15 @@ def view(x, vars=None, autoscale=True):
             .hvplot(
                 groupby="variable",
                 dynamic=True,
-                responsive=(in_notebook() is False),
+                responsive=(in_notebook(file) is False),
             )
         )
-        if in_notebook():
-            return intplot
+        if in_notebook(file):
+            if file is None:
+                return intplot
+            else:
+                hvplot.save(intplot, file)
+                return None
 
         t = Thread(target=ctrc)
         t.start()
@@ -725,7 +753,7 @@ def view(x, vars=None, autoscale=True):
                 coastline=coastline,
                 projection=projection,
                 rasterize=rasterize,
-                responsive=in_notebook() is False,
+                responsive=in_notebook(file) is False,
             )
         else:
 
@@ -744,11 +772,15 @@ def view(x, vars=None, autoscale=True):
                 coastline=coastline,
                 rasterize=False,
                 projection=projection,
-                responsive=in_notebook() is False,
+                responsive=in_notebook(file) is False,
             )
 
-        if in_notebook():
-            return intplot
+        if in_notebook(file):
+            if file is None:
+                return intplot
+            else:
+                hvplot.save(intplot, file)
+                return None
 
         t = Thread(target=ctrc)
         t.start()
@@ -789,7 +821,7 @@ def view(x, vars=None, autoscale=True):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
                     intplot = ds.hvplot.quadmesh(
@@ -801,7 +833,7 @@ def view(x, vars=None, autoscale=True):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     )
                 # intplot = pn.Row(pn.WidgetBox(w1), intplot)
             else:
@@ -821,7 +853,7 @@ def view(x, vars=None, autoscale=True):
                         projection=projection,
                         rasterize=False,
                         cmap="RdBu_r",
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
                     intplot = ds.hvplot.image(
@@ -833,11 +865,15 @@ def view(x, vars=None, autoscale=True):
                         projection=projection,
                         rasterize=False,
                         cmap="RdBu_r",
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     )
 
-            if in_notebook():
-                return intplot
+            if in_notebook(file):
+                if file is None:
+                    return intplot
+                else:
+                    hvplot.save(intplot, file)
+                    return None
 
             t = Thread(target=ctrc)
             t.start()
@@ -863,7 +899,7 @@ def view(x, vars=None, autoscale=True):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
                     intplot = ds.hvplot.quadmesh(
@@ -875,7 +911,7 @@ def view(x, vars=None, autoscale=True):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     )
 
             else:
@@ -896,7 +932,7 @@ def view(x, vars=None, autoscale=True):
                         coastline=coastline,
                         rasterize=False,
                         projection=projection,
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
                     intplot = ds.hvplot.image(
@@ -908,11 +944,15 @@ def view(x, vars=None, autoscale=True):
                         coastline=coastline,
                         rasterize=False,
                         projection=projection,
-                        responsive=(in_notebook() is False),
+                        responsive=(in_notebook(file) is False),
                     )
 
-            if in_notebook():
-                return intplot
+            if in_notebook(file):
+                if file is None:
+                    return intplot
+                else:
+                    hvplot.save(intplot, file)
+                    return None
 
             t = Thread(target=ctrc)
             t.start()
