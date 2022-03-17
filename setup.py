@@ -23,7 +23,7 @@ except IOError:
 
 
 setup(name='ncplot',
-      version='0.1.3',
+      version='0.2.0',
       description=DESCRIPTION,
       long_description=long_description,
       long_description_content_type='text/markdown',
