@@ -145,7 +145,11 @@ def in_notebook(out = None):
     return "ipykernel" in sys.modules
 
 
+<<<<<<< HEAD
+def view(x, vars=None, autoscale=True, **kwargs):
+=======
 def view(x, vars=None, autoscale=True, out = None):
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
     """
     Plot the contents of a NetCDF out
     Parameters
@@ -433,7 +437,11 @@ def view(x, vars=None, autoscale=True, out = None):
         intplot = df.hvplot(
             groupby="variable",
             dynamic=True,
+<<<<<<< HEAD
+            responsive=(in_notebook() is False), **kwargs,
+=======
             responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
         )
         if in_notebook(out):
             if out is None:
@@ -497,9 +505,9 @@ def view(x, vars=None, autoscale=True, out = None):
                         quadmesh = True
 
                 if quadmesh:
-                    intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis")
+                    intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis", **kwargs)
                 else:
-                    intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
+                    intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis", **kwargs)
 
             else:
 
@@ -541,7 +549,11 @@ def view(x, vars=None, autoscale=True, out = None):
                             y_var,
                             vars,
                             cmap="RdBu_r",
+<<<<<<< HEAD
+                            responsive=(in_notebook() is False), **kwargs,
+=======
                             responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                         ).redim.range(**{vars: (-v_max, v_max)})
                     else:
                         intplot = ds.hvplot.image(
@@ -550,14 +562,18 @@ def view(x, vars=None, autoscale=True, out = None):
                             vars,
                             cmap="RdBu_r",
                             rasterize=False,
+<<<<<<< HEAD
+                            responsive=(in_notebook() is False), **kwargs,
+=======
                             responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                         ).redim.range(**{vars: (-v_max, v_max)})
 
                 else:
                     if quadmesh:
-                        intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis")
+                        intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis", **kwargs)
                     else:
-                        intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis")
+                        intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis", **kwargs)
 
             if in_notebook(out):
                 if out is None:
@@ -663,11 +679,11 @@ def view(x, vars=None, autoscale=True, out = None):
 
                     if quadmesh:
                         intplot = ds.hvplot.quadmesh(
-                            x_var, y_var, vars, cmap="viridis", rasterize=True
+                            x_var, y_var, vars, cmap="viridis", rasterize=True, **kwargs
                         )
                     else:
                         intplot = ds.hvplot.image(
-                            x_var, y_var, vars, cmap="viridis", rasterize=False
+                            x_var, y_var, vars, cmap="viridis", rasterize=False, **kwargs
                         )
 
                     if in_notebook(out):
@@ -716,7 +732,11 @@ def view(x, vars=None, autoscale=True, out = None):
             .hvplot(
                 groupby="variable",
                 dynamic=True,
+<<<<<<< HEAD
+                responsive=(in_notebook() is False), **kwargs,
+=======
                 responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
             )
         )
         if in_notebook(out):
@@ -753,7 +773,12 @@ def view(x, vars=None, autoscale=True, out = None):
                 coastline=coastline,
                 projection=projection,
                 rasterize=rasterize,
+<<<<<<< HEAD
+                responsive=in_notebook() is False,
+                **kwargs
+=======
                 responsive=in_notebook(out) is False,
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
             )
         else:
 
@@ -772,7 +797,12 @@ def view(x, vars=None, autoscale=True, out = None):
                 coastline=coastline,
                 rasterize=False,
                 projection=projection,
+<<<<<<< HEAD
+                responsive=in_notebook() is False,
+                **kwargs
+=======
                 responsive=in_notebook(out) is False,
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
             )
 
         if in_notebook(out):
@@ -821,7 +851,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
                     intplot = ds.hvplot.quadmesh(
@@ -833,7 +868,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     )
                 # intplot = pn.Row(pn.WidgetBox(w1), intplot)
             else:
@@ -853,7 +893,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         projection=projection,
                         rasterize=False,
                         cmap="RdBu_r",
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
                     intplot = ds.hvplot.image(
@@ -865,7 +910,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         projection=projection,
                         rasterize=False,
                         cmap="RdBu_r",
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     )
 
             if in_notebook(out):
@@ -899,7 +949,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
                     intplot = ds.hvplot.quadmesh(
@@ -911,7 +966,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     )
 
             else:
@@ -932,7 +992,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         coastline=coastline,
                         rasterize=False,
                         projection=projection,
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
                     intplot = ds.hvplot.image(
@@ -944,7 +1009,12 @@ def view(x, vars=None, autoscale=True, out = None):
                         coastline=coastline,
                         rasterize=False,
                         projection=projection,
+<<<<<<< HEAD
+                        responsive=(in_notebook() is False),
+                        **kwargs
+=======
                         responsive=(in_notebook(out) is False),
+>>>>>>> 3df6fe0d7e2323994bb21db9fba404bf4a30aa90
                     )
 
             if in_notebook(out):
