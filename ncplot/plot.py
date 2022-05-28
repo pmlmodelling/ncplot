@@ -175,7 +175,12 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
     if xr_file is False:
         try:
-            ds = xr.open_dataset(x)
+            try:
+                import nctoolkit as nc
+                ds = nc.open_data(x)
+                ds = ds.to_xarray()
+            except:
+                ds = xr.open_dataset(x)
         except:
             ds = xr.open_dataset(x, decode_times=False)
             warnings.warn("Warning: xarray could not decode times!")
