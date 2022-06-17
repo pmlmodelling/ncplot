@@ -7,8 +7,5 @@ bokeh
 panel
 pandas
 metpy
-geoviews
-pyproj
-cartopy
 datashader
 

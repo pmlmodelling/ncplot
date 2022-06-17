@@ -1,11 +1,17 @@
 import sys
+import warnings
 from threading import Thread
 
-from cartopy import crs
 import time
 import holoviews as hv
 import panel as pn
-import cartopy.crs as ccrs
+try:
+    from cartopy import crs
+    import cartopy.crs as ccrs
+    projection = ccrs.PlateCarree()
+except:
+    warnings.warn("Unable to import cartopy. For better plots install cartopy!")
+    projection = None
 
 import pandas as pd
 import hvplot.pandas
@@ -13,7 +19,6 @@ import hvplot.xarray
 import hvplot
 from bokeh.plotting import show
 import xarray as xr
-import warnings
 import copy
 import numpy as np
 
@@ -64,10 +69,6 @@ def change_coords(dx):
     lat_df.columns = ["value", "number"]
 
     if lat_df.number[0] / lat_df.number[1] < 10:
-        #    switch_coords = True
-
-        ## if there are repeated zeros
-        # if len([x for x in ds[lat_name].values[0] if x == 0]) <= 1:
         return ds
 
     if sum(ds[lon_name].values[0] == ds[lon_name].values[1]) == len(ds[lon_name][0]):
@@ -173,11 +174,13 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
     else:
         xr_file = False
 
+    nc_vars = None
     if xr_file is False:
         try:
             try:
                 import nctoolkit as nc
                 ds = nc.open_data(x)
+                nc_vars = ds.variables
                 ds = ds.to_xarray()
             except:
                 ds = xr.open_dataset(x)
@@ -422,7 +425,13 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
     if len([x for x in coord_df.length if x > 1]) == 1 and spatial_map is False:
 
-        df = ds.to_dataframe().reset_index()
+        df = ds.to_dataframe()
+        if nc_vars is not None:
+            cols = [x for x in list(df.columns) if x in nc_vars]
+            df = df.loc[:,cols]
+
+        df = df.reset_index().drop_duplicates().reset_index()
+
         if type(vars) is str:
             vars = [vars]
 
@@ -745,7 +754,12 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
             if coastline:
                 coastline = get_coastline(ds, lon_name, lat_name)
-                projection = ccrs.PlateCarree()
+                try:
+                    projection = ccrs.PlateCarree()
+                except:
+                    projection = None
+                    coastline = False
+                    
             else:
                 projection = None
 
@@ -765,7 +779,11 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
             if coastline:
                 coastline = get_coastline(ds, lon_name, lat_name)
-                projection = ccrs.PlateCarree()
+                try:
+                    projection = ccrs.PlateCarree()
+                except:
+                    projection = None
+                    coastline = False
             else:
                 projection = None
 
@@ -814,7 +832,11 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             if quadmesh:
                 if coastline:
                     coastline = get_coastline(ds, lon_name, lat_name)
-                    projection = ccrs.PlateCarree()
+                    try:
+                        projection = ccrs.PlateCarree()
+                    except:
+                        projection = None
+                        coastline = False
                 else:
                     projection = None
 
@@ -844,11 +866,14 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         responsive=(in_notebook() is False),
                         **kwargs
                     )
-                # intplot = pn.Row(pn.WidgetBox(w1), intplot)
             else:
                 if coastline:
                     coastline = get_coastline(ds, lon_name, lat_name)
-                    projection = ccrs.PlateCarree()
+                    try:
+                        projection = ccrs.PlateCarree()
+                    except:
+                        projection = None
+                        coastline = False
                 else:
                     projection = None
 
@@ -897,9 +922,15 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             if quadmesh:
                 if coastline:
                     coastline = get_coastline(ds, lon_name, lat_name)
-                    projection = ccrs.PlateCarree()
+                    try:
+                        projection = ccrs.PlateCarree()
+                    except:
+                        projection = None
+                        coastline = False
                 else:
                     projection = None
+
+
                 if autoscale:
                     intplot = ds.hvplot.quadmesh(
                         lon_name,
@@ -931,9 +962,14 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
                 if coastline:
                     coastline = get_coastline(ds, lon_name, lat_name)
-                    projection = ccrs.PlateCarree()
+                    try:
+                        projection = ccrs.PlateCarree()
+                    except:
+                        projection = None
+                        coastline = False
                 else:
                     projection = None
+                projection = None
 
                 if autoscale:
                     intplot = ds.hvplot.image(
