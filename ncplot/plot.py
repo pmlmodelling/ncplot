@@ -225,12 +225,19 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             if "pole" in ds[lon_name].long_name:
                 coastline = False
 
-    if lon_name is None:
+    if True:
         dims = list(ds.dims)
-        coords = list(ds.coords)
-        if len([x for x in coords if x not in dims]) == 0:
-            for x in dims:
-                if x not in coords:
+        coords = ds.coords
+        coords_list = list(coords)
+        selected = []
+        for x in coords_list:
+            selected += list(coords[x].dims)
+        selected = list(set(selected))
+        add_these = [x for x in dims if x not in selected]
+
+        if len(add_these) > 0:
+            for x in add_these:
+                if x not in coords_list and "vert" not in x:
                     ds[x] = ds[x]
             df_dims = get_dims(ds)
             lon_name = df_dims.longitude[0]
