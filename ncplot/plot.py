@@ -225,6 +225,25 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             if "pole" in ds[lon_name].long_name:
                 coastline = False
 
+    if lon_name is None:
+        dims = list(ds.dims)
+        coords = list(ds.coords)
+        if len([x for x in coords if x not in dims]) == 0:
+            for x in dims:
+                if x not in coords:
+                    ds[x] = ds[x]
+            df_dims = get_dims(ds)
+            lon_name = df_dims.longitude[0]
+            lat_name = df_dims.latitude[0]
+
+            if lon_name is not None:
+                if "long_name" in ds[lon_name].attrs:
+                    if "rotate" in ds[lon_name].long_name:
+                        coastline = False
+
+                    if "pole" in ds[lon_name].long_name:
+                        coastline = False
+
     if len([x for x in ds.coords if "lon" in x]) > len(
         [x for x in ds.dims if "lon" in x]
     ):
@@ -614,6 +633,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             if "time" in x:
                 time_in = True
                 possible += 1
+
 
         if time_name in coord_list and time_in and non_map:
 
