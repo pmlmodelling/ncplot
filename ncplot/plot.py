@@ -161,6 +161,9 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
     """
 
+    if "clim" in kwargs:
+        autoscale = False
+
     if out is not None:
         if out.endswith(".html") is False:
             raise ValueError("out name must end with html")
@@ -605,6 +608,9 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                 else:
                     hvplot.save(intplot, out)
                     return None
+            if out is not None:
+                hvplot.save(intplot, out)
+                return None
 
             t = Thread(target=ctrc)
             t.start()
