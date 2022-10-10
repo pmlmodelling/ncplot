@@ -1002,7 +1002,6 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         coastline = False
                 else:
                     projection = None
-                projection = None
 
                 if autoscale:
                     intplot = ds.hvplot.image(
