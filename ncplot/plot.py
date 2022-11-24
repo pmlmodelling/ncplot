@@ -10,7 +10,7 @@ try:
     import cartopy.crs as ccrs
     projection = ccrs.PlateCarree()
 except:
-    warnings.warn("Unable to import cartopy. For better plots install cartopy!")
+    warnings.warn("Unable to import cartopy. For better plots install cartopy or check cartopy installation!")
     projection = None
 
 import pandas as pd
