@@ -9,5 +9,6 @@ pandas
 metpy
 datashader
 cartopy
+geoviews
 jinja2<=3.0.3
 
