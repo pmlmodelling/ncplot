@@ -164,11 +164,18 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
     if "clim" in kwargs:
         autoscale = False
 
+    coastline = False
+
     if out is not None:
         if out.endswith(".html") is False:
             raise ValueError("out name must end with html")
 
-    coastline = True
+    for kk in kwargs.keys():
+        if kk == "coast":
+            coastline = kwargs[kk]
+
+    if "coast" in kwargs.keys():
+        kwargs.pop("coast")
     if type(x) is xr.core.dataarray.DataArray:
         x = x.to_dataset()
 
@@ -819,6 +826,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                     coastline = False
             else:
                 projection = None
+
 
             intplot = ds.hvplot.image(
                 lon_name,
