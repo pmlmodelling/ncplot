@@ -11,6 +11,8 @@ xarray
 netCDF4
 hvplot
 panel
+docutils<0.17
+
 
 
 
