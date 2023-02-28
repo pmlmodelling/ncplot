@@ -23,7 +23,7 @@ except IOError:
 
 
 setup(name='ncplot',
-      version='0.2.8',
+      version='0.2.9',
       description=DESCRIPTION,
       long_description=long_description,
       long_description_content_type='text/markdown',
@@ -56,6 +56,11 @@ setup(name='ncplot',
         'wheel',
     ],
       install_requires = REQUIREMENTS,
+      extras_require={
+        ':python_version <= "3.10"': [
+            'datashader',
+        ],
+    },
       zip_safe=False)
 
 
