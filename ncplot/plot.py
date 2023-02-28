@@ -5,12 +5,16 @@ from threading import Thread
 import time
 import holoviews as hv
 import panel as pn
+
 try:
     from cartopy import crs
     import cartopy.crs as ccrs
+
     projection = ccrs.PlateCarree()
 except:
-    warnings.warn("Unable to import cartopy. For better plots install cartopy or check cartopy installation!")
+    warnings.warn(
+        "Unable to import cartopy. For better plots install cartopy or check cartopy installation!"
+    )
     projection = None
 
 import pandas as pd
@@ -131,7 +135,7 @@ def ctrc():
     print("Press Ctrl+C to stop plotting server")
 
 
-def in_notebook(out = None):
+def in_notebook(out=None):
     """
     Returns ``True`` if the module is running in IPython kernel,
     ``False`` if in IPython shell or other Python shell.
@@ -146,7 +150,7 @@ def in_notebook(out = None):
     return "ipykernel" in sys.modules
 
 
-def view(x, vars=None, autoscale=True,out = None, **kwargs):
+def view(x, vars=None, autoscale=True, out=None, **kwargs):
     """
     Plot the contents of a NetCDF out
     Parameters
@@ -189,6 +193,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
         try:
             try:
                 import nctoolkit as nc
+
                 ds = nc.open_data(x)
                 nc_vars = ds.variables
                 ds = ds.to_xarray()
@@ -280,7 +285,11 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
     switch_coords = False
 
-    rasterize = True
+    try:
+        import datashader
+        rasterize = True
+    except:
+        rasterize = False
 
     if quadmesh:
         switch_coords = True
@@ -464,7 +473,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
         df = ds.to_dataframe()
         if nc_vars is not None:
             cols = [x for x in list(df.columns) if x in nc_vars]
-            df = df.loc[:,cols]
+            df = df.loc[:, cols]
 
         df = df.reset_index().drop_duplicates().reset_index()
 
@@ -483,7 +492,8 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
         intplot = df.hvplot(
             groupby="variable",
             dynamic=True,
-            responsive=(in_notebook() is False), **kwargs,
+            responsive=(in_notebook() is False),
+            **kwargs,
         )
         if in_notebook(out):
             if out is None:
@@ -547,9 +557,13 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         quadmesh = True
 
                 if quadmesh:
-                    intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis", **kwargs)
+                    intplot = ds.hvplot.quadmesh(
+                        x_var, y_var, vars, cmap="viridis", **kwargs
+                    )
                 else:
-                    intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis", **kwargs)
+                    intplot = ds.hvplot.image(
+                        x_var, y_var, vars, cmap="viridis", **kwargs
+                    )
 
             else:
 
@@ -565,24 +579,26 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                 # figure out if it needs to be quadmesh
                 if x_var == time_name:
                     quadmesh = True
-                x_vals = ds[x_var].values
+                if not quadmesh:
+                    x_vals = ds[x_var].values
 
-                if len(x_vals) > 2:
-                    if (
-                        np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float")
-                        - np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float")
-                        > 0
-                    ):
-                        quadmesh = True
-                y_vals = ds[y_var].values
+                    if len(x_vals) > 2:
+                        if (
+                            np.nanmax(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                            - np.nanmin(x_vals[0:-2] - x_vals[1:-1]).astype("float")
+                            > 0
+                        ):
+                            quadmesh = True
+                if not quadmesh:
+                    y_vals = ds[y_var].values
 
-                if len(y_vals) > 2:
-                    if (
-                        np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float")
-                        - np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float")
-                        > 0
-                    ):
-                        quadmesh = True
+                    if len(y_vals) > 2:
+                        if (
+                            np.nanmax(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                            - np.nanmin(y_vals[0:-2] - y_vals[1:-1]).astype("float")
+                            > 0
+                        ):
+                            quadmesh = True
 
                 if self_max > 0 and self_min < 0:
                     if quadmesh:
@@ -591,7 +607,8 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                             y_var,
                             vars,
                             cmap="RdBu_r",
-                            responsive=(in_notebook() is False), **kwargs,
+                            responsive=(in_notebook() is False),
+                            **kwargs,
                         ).redim.range(**{vars: (-v_max, v_max)})
                     else:
                         intplot = ds.hvplot.image(
@@ -600,14 +617,19 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                             vars,
                             cmap="RdBu_r",
                             rasterize=False,
-                            responsive=(in_notebook() is False), **kwargs,
+                            responsive=(in_notebook() is False),
+                            **kwargs,
                         ).redim.range(**{vars: (-v_max, v_max)})
 
                 else:
                     if quadmesh:
-                        intplot = ds.hvplot.quadmesh(x_var, y_var, vars, cmap="viridis", **kwargs)
+                        intplot = ds.hvplot.quadmesh(
+                            x_var, y_var, vars, cmap="viridis", **kwargs
+                        )
                     else:
-                        intplot = ds.hvplot.image(x_var, y_var, vars, cmap="viridis", **kwargs)
+                        intplot = ds.hvplot.image(
+                            x_var, y_var, vars, cmap="viridis", **kwargs
+                        )
 
             if in_notebook(out):
                 if out is None:
@@ -653,7 +675,6 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             if "time" in x:
                 time_in = True
                 possible += 1
-
 
         if time_name in coord_list and time_in and non_map:
 
@@ -717,11 +738,16 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
 
                     if quadmesh:
                         intplot = ds.hvplot.quadmesh(
-                            x_var, y_var, vars, cmap="viridis", rasterize=True, **kwargs
+                            x_var, y_var, vars, cmap="viridis", rasterize=rasterize, **kwargs
                         )
                     else:
                         intplot = ds.hvplot.image(
-                            x_var, y_var, vars, cmap="viridis", rasterize=False, **kwargs
+                            x_var,
+                            y_var,
+                            vars,
+                            cmap="viridis",
+                            rasterize=False,
+                            **kwargs,
                         )
 
                     if in_notebook(out):
@@ -770,7 +796,8 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             .hvplot(
                 groupby="variable",
                 dynamic=True,
-                responsive=(in_notebook() is False), **kwargs,
+                responsive=(in_notebook() is False),
+                **kwargs,
             )
         )
         if in_notebook(out):
@@ -799,7 +826,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                 except:
                     projection = None
                     coastline = False
-                    
+
             else:
                 projection = None
 
@@ -813,7 +840,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                 projection=projection,
                 rasterize=rasterize,
                 responsive=in_notebook() is False,
-                **kwargs
+                **kwargs,
             )
         else:
 
@@ -827,7 +854,6 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
             else:
                 projection = None
 
-
             intplot = ds.hvplot.image(
                 lon_name,
                 lat_name,
@@ -838,7 +864,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                 rasterize=False,
                 projection=projection,
                 responsive=in_notebook() is False,
-                **kwargs
+                **kwargs,
             )
 
         if in_notebook(out):
@@ -892,7 +918,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         projection=projection,
                         rasterize=rasterize,
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
                     intplot = ds.hvplot.quadmesh(
@@ -905,7 +931,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         projection=projection,
                         rasterize=rasterize,
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     )
             else:
                 if coastline:
@@ -929,7 +955,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         rasterize=False,
                         cmap="RdBu_r",
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
                     intplot = ds.hvplot.image(
@@ -942,7 +968,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         rasterize=False,
                         cmap="RdBu_r",
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     )
 
             if in_notebook(out):
@@ -971,7 +997,6 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                 else:
                     projection = None
 
-
                 if autoscale:
                     intplot = ds.hvplot.quadmesh(
                         lon_name,
@@ -983,7 +1008,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         projection=projection,
                         rasterize=rasterize,
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
                     intplot = ds.hvplot.quadmesh(
@@ -996,7 +1021,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         projection=projection,
                         rasterize=rasterize,
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     )
 
             else:
@@ -1022,7 +1047,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         rasterize=False,
                         projection=projection,
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
                     intplot = ds.hvplot.image(
@@ -1035,7 +1060,7 @@ def view(x, vars=None, autoscale=True,out = None, **kwargs):
                         rasterize=False,
                         projection=projection,
                         responsive=(in_notebook() is False),
-                        **kwargs
+                        **kwargs,
                     )
 
             if in_notebook(out):
