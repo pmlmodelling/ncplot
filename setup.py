@@ -30,7 +30,7 @@ extras_require: dict[str, list[str]] = {
 extras_require["complete"] = ["geoviews"]
 
 setup(name='ncplot',
-      version='0.2.9',
+      version='0.3.0',
       description=DESCRIPTION,
       long_description=long_description,
       long_description_content_type='text/markdown',
