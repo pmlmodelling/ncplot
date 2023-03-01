@@ -21,11 +21,18 @@ try:
 except IOError:
     long_description = DESCRIPTION
 
-extras_require: dict[str, list[str]] = {
+#extras_require: dict[str, list[str]] = {
+#        ':python_version <= "3.10"': [
+#            'datashader',
+#        ],
+#}
+
+extras_require: dict() = {
         ':python_version <= "3.10"': [
             'datashader',
         ],
 }
+
 
 extras_require["complete"] = ["geoviews"]
 
