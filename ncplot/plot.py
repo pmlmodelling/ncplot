@@ -31,6 +31,17 @@ from ncplot.utils import get_dims, check_lon, check_lat
 hv.extension("bokeh")
 hv.Store.renderers
 
+def as_raster():
+    """
+    Simple hack to rasterize when datashader is available.
+    This is to get around Python 3.11 datashader nonavailability
+    """
+    try:
+        import datashader
+        return True
+    except:
+        return False
+
 
 def get_coastline(ds, lon_name, lat_name):
     """
@@ -286,7 +297,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
     switch_coords = False
 
     try:
-        import datashader
+        #import datashader
         rasterize = True
     except:
         rasterize = False

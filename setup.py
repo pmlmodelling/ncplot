@@ -21,6 +21,13 @@ try:
 except IOError:
     long_description = DESCRIPTION
 
+extras_require: dict[str, list[str]] = {
+        ':python_version <= "3.10"': [
+            'datashader',
+        ],
+}
+
+extras_require["complete"] = ["geoviews"]
 
 setup(name='ncplot',
       version='0.2.9',
@@ -56,11 +63,7 @@ setup(name='ncplot',
         'wheel',
     ],
       install_requires = REQUIREMENTS,
-      extras_require={
-        ':python_version <= "3.10"': [
-            'datashader',
-        ],
-    },
+      extras_require = extras_require,
       zip_safe=False)
 
 

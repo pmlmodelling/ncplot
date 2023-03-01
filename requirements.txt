@@ -7,8 +7,5 @@ bokeh
 panel
 pandas
 metpy
-#datashader
-#cartopy
-geoviews>=1.9.4
 jinja2<=3.0.3
 
