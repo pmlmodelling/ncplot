@@ -11,6 +11,6 @@ Plotting
 .. autosummary::
    :toctree: generated/
 
-   ncplot 
+   view 
 
 
