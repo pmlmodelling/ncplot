@@ -7,5 +7,4 @@ bokeh
 panel
 pandas
 metpy
-jinja2<=3.0.3
 
