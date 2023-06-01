@@ -151,11 +151,17 @@ def in_notebook(out=None):
     Returns ``True`` if the module is running in IPython kernel,
     ``False`` if in IPython shell or other Python shell.
     """
+    import sys
 
     if out is not None:
         return True
+    if "ipykernel" in sys.modules:
+        return True
 
     if "spyder" in sys.modules:
+        return False
+
+    if 'debugpy' in sys.modules:
         return False
 
     return "ipykernel" in sys.modules
@@ -177,7 +183,14 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
     """
 
     if "clim" in kwargs:
-        autoscale = False
+        ignore = False
+
+        if kwargs["clim"][0] < 0:
+            if kwargs["clim"][1] > 0:
+                ignore = True
+
+        if not ignore:
+            autoscale = False
 
     coastline = False
 
@@ -503,7 +516,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         intplot = df.hvplot(
             groupby="variable",
             dynamic=True,
-            responsive=(in_notebook() is False),
+            #responsive=(in_notebook() is False),
+            responsive = False,
             **kwargs,
         )
         if in_notebook(out):
@@ -583,6 +597,9 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                     self_max = ds.rename({vars: "x"}).x.max()
                     self_min = ds.rename({vars: "x"}).x.min()
                     v_max = float(max(self_max.values, -self_min.values))
+                    if "clim" in kwargs:
+                        v_max = float(max(-kwargs["clim"][0], kwargs["clim"][1]))
+
                 else:
                     self_max = 1
                     self_min = 1
@@ -618,7 +635,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                             y_var,
                             vars,
                             cmap="RdBu_r",
-                            responsive=(in_notebook() is False),
+                            #responsive=(in_notebook() is False),
+                            responsive = False,
                             **kwargs,
                         ).redim.range(**{vars: (-v_max, v_max)})
                     else:
@@ -628,7 +646,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                             vars,
                             cmap="RdBu_r",
                             rasterize=False,
-                            responsive=(in_notebook() is False),
+                            #responsive=(in_notebook() is False),
+                            responsive = False,
                             **kwargs,
                         ).redim.range(**{vars: (-v_max, v_max)})
 
@@ -807,7 +826,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
             .hvplot(
                 groupby="variable",
                 dynamic=True,
-                responsive=(in_notebook() is False),
+                #responsive=(in_notebook() is False),
+                responsive = False,
                 **kwargs,
             )
         )
@@ -850,7 +870,9 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                 coastline=coastline,
                 projection=projection,
                 rasterize=rasterize,
-                responsive=in_notebook() is False,
+                #responsive=in_notebook() is False,
+                responsive = False,
+
                 **kwargs,
             )
         else:
@@ -874,7 +896,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                 coastline=coastline,
                 rasterize=False,
                 projection=projection,
-                responsive=in_notebook() is False,
+                #responsive=in_notebook() is False,
+                responsive = False,
                 **kwargs,
             )
 
@@ -902,6 +925,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
             self_max = ds.rename({vars: "x_dim12345"}).x_dim12345.max()
             self_min = ds.rename({vars: "x_dim12345"}).x_dim12345.min()
             v_max = max(self_max.values, -self_min.values)
+            if "clim" in kwargs:
+                v_max = float(max(-kwargs["clim"][0], kwargs["clim"][1]))
         else:
             self_max = 1
             self_min = 1
@@ -928,7 +953,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
@@ -941,7 +967,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     )
             else:
@@ -965,7 +992,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         projection=projection,
                         rasterize=False,
                         cmap="RdBu_r",
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     ).redim.range(**{vars: (-v_max, v_max)})
                 else:
@@ -978,7 +1006,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         projection=projection,
                         rasterize=False,
                         cmap="RdBu_r",
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     )
 
@@ -1018,7 +1047,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
@@ -1031,7 +1061,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         coastline=coastline,
                         projection=projection,
                         rasterize=rasterize,
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     )
 
@@ -1057,7 +1088,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         coastline=coastline,
                         rasterize=False,
                         projection=projection,
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     ).redim.range(**{vars: (self_min.values, v_max)})
                 else:
@@ -1070,7 +1102,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         coastline=coastline,
                         rasterize=False,
                         projection=projection,
-                        responsive=(in_notebook() is False),
+                        #responsive=(in_notebook() is False),
+                        responsive = False,
                         **kwargs,
                     )
 
