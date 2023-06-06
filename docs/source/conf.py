@@ -42,7 +42,7 @@ extensions = [
 
 #html_theme = "sphinx_rtd_theme"
 #html_theme = "haiku"
-html_theme = "press"
+html_theme = "insegel"
 
 
 # Add any paths that contain templates here, relative to this directory.
