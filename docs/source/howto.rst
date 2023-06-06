@@ -3,10 +3,10 @@ How to use ncplot
 
 Using ncplot is very easy. It let's you plot the contents of a NetCDF automatically. To plot a file in Python, preferably a Jupyter notebook, do the following:
 
-#.. code:: ipython3
-#
-#    from ncplot import view
-#    view("foo.nc")
+.. code:: ipython3
+
+    from ncplot import view
+    view("foo.nc")
 #
 #If you only want to plot a specific variable, you can do the following:
 #
