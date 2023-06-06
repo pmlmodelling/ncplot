@@ -161,9 +161,6 @@ def in_notebook(out=None):
     if "spyder" in sys.modules:
         return False
 
-    if 'debugpy' in sys.modules:
-        return False
-
     return "ipykernel" in sys.modules
 
 
@@ -264,6 +261,10 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
             if "pole" in ds[lon_name].long_name:
                 coastline = False
 
+    bad = []
+
+
+
     if True:
         dims = list(ds.dims)
         coords = ds.coords
@@ -289,6 +290,17 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
 
                     if "pole" in ds[lon_name].long_name:
                         coastline = False
+
+    if lon_name is not None:
+        for vv in ds.variables:
+            if lon_name not in list(ds[vv].dims):
+                if lat_name not in list(ds[vv].dims):
+                    if "time" not in list(ds[vv].dims):
+                        bad += [vv]
+    
+        if len(bad) > 0:
+            ds = ds.drop(bad)
+
 
     if len([x for x in ds.coords if "lon" in x]) > len(
         [x for x in ds.dims if "lon" in x]
