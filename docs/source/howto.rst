@@ -31,7 +31,7 @@ There is also built in support for xarray datasets and dataarrays.
 ncplot operates as a command line tool, letting you view the contents of
 a NetCDF file on a website. This feature only works in development
 version right now. All you need to do is provide the file you want to
-look at:
+look at::
 
 
-    $$ ncplot example.nc
+    $ ncplot example.nc
