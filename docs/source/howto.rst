@@ -1,27 +1,21 @@
 How to use ncplot 
 ---------------------------
 
-Using ncplot is very easy. It let's you plot the contents of a NetCDF automatically. To plot a file in Python, preferably a Jupyter notebook, do the following::
+Using ncplot is very easy. It lets you plot the contents of a NetCDF automatically. We will illustrate this by plotting sea surface temperature from the National Oceanic and Atmospheric Administration's COBE2 dataset. To plot a file in Python, preferably a Jupyter notebook, do the following::
 
     from ncplot import view
-    view("foo.nc")
+    view("https://psl.noaa.gov/thredds/dodsC/Datasets/COBE2/sst.mon.ltm.1981-2010.nc")
 
 .. raw:: html
    :file: plot.html
 
-If you only want to plot a specific variable, you can do the following::
-
-    view("foo.nc", "variable")
-
-If you want to plot a list of variables, do the following::
-
-    view("foo.nc", ["variable1", "variable2"])
-
-There is also built in support for xarray datasets and dataarrays::
+There is also built in support for xarray datasets::
 
     import ncplot.xarray
+    import xarray as xr 
+    ds = xr.open_dataset("https://psl.noaa.gov/thredds/dodsC/Datasets/COBE2/sst.mon.ltm.1981-2010.nc")
     ds.ncplot.view()
 
 ncplot operates as a command line tool, letting you view the contents of a NetCDF file on a website. All you need to do is provide the file you want to look at::
 
-    $ ncplot example.nc
+    $ ncplot foo.nc
