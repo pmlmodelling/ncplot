@@ -16,7 +16,10 @@ There is also built in support for xarray datasets::
     import ncplot.xarray
     import xarray as xr 
     ds = xr.open_dataset("https://psl.noaa.gov/thredds/dodsC/Datasets/COBE2/sst.mon.ltm.1981-2010.nc")
-    ds.ncplot.view()
+    ds["sst"].ncplot.view(coast = True)
+
+.. raw:: html
+   :file: xarray.html
 
 ncplot operates as a command line tool, letting you view the contents of a NetCDF file on a website. All you need to do is provide the file you want to look at::
 
