@@ -1,5 +1,3 @@
-.. _installing:
-
 Installation
 ============
 
