@@ -6,6 +6,9 @@ Using ncplot is very easy. It let's you plot the contents of a NetCDF automatica
     from ncplot import view
     view("foo.nc")
 
+.. raw:: html
+   :file: plot.html
+
 If you only want to plot a specific variable, you can do the following::
 
     view("foo.nc", "variable")
