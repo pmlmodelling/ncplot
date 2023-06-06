@@ -5,8 +5,13 @@ Using ncplot is very easy. It let's you plot the contents of a NetCDF automatica
 
 .. code:: ipython3
 
-    from ncplot import view
-    view("foo.nc")
+    import nctoolkit as nc
+    ds = nc.open_data(infile)
+
+#.. code:: ipython3
+
+#    from ncplot import view
+#    view("foo.nc")
 #
 #If you only want to plot a specific variable, you can do the following:
 #
