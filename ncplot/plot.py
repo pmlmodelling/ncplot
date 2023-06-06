@@ -167,6 +167,7 @@ def in_notebook(out=None):
 def view(x, vars=None, autoscale=True, out=None, **kwargs):
     """
     Plot the contents of a NetCDF out
+
     Parameters
     -------------
     x : object or str
@@ -214,6 +215,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         try:
             try:
                 import nctoolkit as nc
+                warnings.warn("Checking if nctoolkit is available")
 
                 if os.path.exists(x):
                     ds = nc.open_data(x)
