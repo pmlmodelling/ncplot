@@ -7,9 +7,6 @@ Documentation
 -------------
 **Getting Started**
 
-* :doc:`installing`
-* :doc:`overview`
-
 .. toctree::
    :maxdepth: 1
    :hidden:
