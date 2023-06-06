@@ -13,7 +13,7 @@ Documentation
    :caption: Getting Started
 
    installing 
-   overview 
+   howto
 
 
 
