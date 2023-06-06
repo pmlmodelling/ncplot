@@ -14,7 +14,7 @@ If you want to plot a list of variables, do the following::
 
     view("foo.nc", ["variable1", "variable2"])
 
-There is also built in support for xarray datasets and dataarrays.
+There is also built in support for xarray datasets and dataarrays::
 
     import ncplot.xarray
     ds.ncplot.view()
