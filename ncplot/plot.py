@@ -215,9 +215,14 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
             try:
                 import nctoolkit as nc
 
-                ds = nc.open_data(x)
-                nc_vars = ds.variables
-                ds = ds.to_xarray()
+                if os.path.exists(x):
+                    ds = nc.open_data(x)
+                    nc_vars = ds.variables
+                    ds = ds.to_xarray()
+                else:
+                    ds = nc.open_thredds(x)
+                    nc_vars = ds.variables
+                    ds = ds.to_xarray()
             except:
                 ds = xr.open_dataset(x)
         except:
