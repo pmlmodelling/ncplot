@@ -1,4 +1,3 @@
-
 ncplot: Quick plotting of NetCDF files
 =======================================================
 

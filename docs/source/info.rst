@@ -1,7 +1,6 @@
 
-####################
 Package info
-####################
+=======================================================
 
 ncplot was created by Robert Wilson at Plymouth Marine Laboratory (PML).
 
