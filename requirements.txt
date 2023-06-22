@@ -7,4 +7,5 @@ bokeh
 panel
 pandas
 metpy
+jupyter_bokeh
 
