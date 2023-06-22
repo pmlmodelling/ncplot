@@ -215,7 +215,6 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         try:
             try:
                 import nctoolkit as nc
-                warnings.warn("Checking if nctoolkit is available")
 
                 if os.path.exists(x):
                     ds = nc.open_data(x)
@@ -237,6 +236,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         ds = ds[vars]
 
     coord_list = list(ds.coords)
+
 
     for cc in coord_list:
         if len(ds[cc].values.ravel()) <= 1:
@@ -298,16 +298,18 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                     if "pole" in ds[lon_name].long_name:
                         coastline = False
 
-    if lon_name is not None:
-        for vv in ds.variables:
-            if lon_name not in list(ds[vv].dims):
-                if lat_name not in list(ds[vv].dims):
-                    if "time" not in list(ds[vv].dims):
-                        bad += [vv]
-    
-        if len(bad) > 0:
-            ds = ds.drop(bad)
-
+    #print(ds.data_vars)
+    #if lon_name is not None:
+    #    for vv in ds.data_vars:
+    #        if lon_name not in list(ds[vv].dims):
+    #            if lat_name not in list(ds[vv].dims):
+    #                [x for x in list(ds[vv].dims] if "time" in x'
+    #                if "time" not in list(ds[vv].dims):
+    #                    bad += [vv]
+    #
+    #    if len(bad) > 0:
+    #        ds = ds.drop(bad)
+    #print(ds.data_vars)
 
     if len([x for x in ds.coords if "lon" in x]) > len(
         [x for x in ds.dims if "lon" in x]
@@ -419,7 +421,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
             n_levels = len(ds[possible_others[0]].values)
 
     if vars is None:
-        vars = [x for x in list(ds.variables) if x not in ff_dims]
+        vars = [x for x in list(ds.data_vars) if x not in ff_dims]
 
         # also must have all of the coordinates...
 
@@ -448,10 +450,10 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
 
     if type(vars) is list:
         for vv in vars:
-            if vv not in list(ds.variables):
+            if vv not in list(ds.data_vars):
                 raise ValueError(f"{vv} is not a valid variable")
     else:
-        if vars not in list(ds.variables):
+        if vars not in list(ds.data_vars):
             raise ValueError(f"{vars} is not a valid variable")
 
     if (lon_name is not None) and (lat_name is not None) and type(vars) is list:
