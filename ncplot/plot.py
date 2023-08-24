@@ -25,6 +25,7 @@ from bokeh.plotting import show
 import xarray as xr
 import copy
 import numpy as np
+import os
 
 from ncplot.utils import get_dims, check_lon, check_lat
 
@@ -297,19 +298,6 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
 
                     if "pole" in ds[lon_name].long_name:
                         coastline = False
-
-    #print(ds.data_vars)
-    #if lon_name is not None:
-    #    for vv in ds.data_vars:
-    #        if lon_name not in list(ds[vv].dims):
-    #            if lat_name not in list(ds[vv].dims):
-    #                [x for x in list(ds[vv].dims] if "time" in x'
-    #                if "time" not in list(ds[vv].dims):
-    #                    bad += [vv]
-    #
-    #    if len(bad) > 0:
-    #        ds = ds.drop(bad)
-    #print(ds.data_vars)
 
     if len([x for x in ds.coords if "lon" in x]) > len(
         [x for x in ds.dims if "lon" in x]
