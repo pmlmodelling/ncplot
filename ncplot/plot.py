@@ -165,7 +165,7 @@ def in_notebook(out=None):
     return "ipykernel" in sys.modules
 
 
-def view(x, vars=None, autoscale=True, out=None, **kwargs):
+def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
     """
     Plot the contents of a NetCDF out
 
@@ -223,7 +223,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                     ds = ds.to_xarray()
                 else:
                     ds = nc.open_thredds(x)
-                    nc_vars = ds.variables
+                    nc_vars = ds.data_vars
                     ds = ds.to_xarray()
             except:
                 ds = xr.open_dataset(x)
@@ -233,10 +233,20 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
     else:
         ds = x
 
+    if vars is None:
+        if nc_vars is not None:
+            vars = [x for x in nc_vars]
+        else:
+            vars = [x for x in list(ds.data_vars)]
+
     if type(vars) is list:
         ds = ds[vars]
 
     coord_list = list(ds.coords)
+
+    #if vars is None:
+        #vars = [x for x in list(ds.data_vars) if x not in coord_list]
+    
 
 
     for cc in coord_list:
@@ -408,8 +418,6 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         else:
             n_levels = len(ds[possible_others[0]].values)
 
-    if vars is None:
-        vars = [x for x in list(ds.data_vars) if x not in ff_dims]
 
         # also must have all of the coordinates...
 
@@ -539,7 +547,9 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         t = Thread(target=ctrc)
         t.start()
 
-        bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
+        # create a panel server if server specified
+
+        bokeh_server = pn.panel(intplot, sizing_mode="stretch_both", websocket_origin = server).show(
             threaded=False
         )
         return None
