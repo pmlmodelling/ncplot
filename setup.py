@@ -37,7 +37,7 @@ extras_require: dict() = {
 extras_require["complete"] = ["geoviews"]
 
 setup(name='ncplot',
-      version='0.3.6',
+      version='0.3.7',
       description=DESCRIPTION,
       long_description=long_description,
       long_description_content_type='text/markdown',
@@ -51,9 +51,11 @@ setup(name='ncplot',
 
       classifiers=[
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        'Programming Language :: Python :: 3.6',
-        'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12',
     ],
 
       project_urls=PROJECT_URLS,
