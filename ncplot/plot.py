@@ -165,7 +165,7 @@ def in_notebook(out=None):
     return "ipykernel" in sys.modules
 
 
-def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
+def view(x, vars=None, autoscale=True, out=None, **kwargs):
     """
     Plot the contents of a NetCDF out
 
@@ -175,6 +175,9 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
         xarray object or file  path
     vars : list or str
         Variables you want to plot. Everything will be plotted if this is not supplied
+    autoscale : bool
+        Set to False if you do not want the colour scales to vary. Defaults to True, which sets
+        scales based on minimum and maximum values.
 
     out : str
         Name of file if you want to store output
@@ -547,11 +550,6 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
         t = Thread(target=ctrc)
         t.start()
 
-        # create a panel server if server specified
-
-        bokeh_server = pn.panel(intplot, sizing_mode="stretch_both", websocket_origin = server).show(
-            threaded=False
-        )
         return None
 
     # heat map where 2 coords have more than 1 value, not a spatial map
@@ -692,9 +690,6 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
 
             t = Thread(target=ctrc)
             t.start()
-            bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                threaded=False
-            )
             return None
 
     # heat map where 3 coords have more than 1 value, and one of them is time. Not a spatial map though
@@ -808,9 +803,6 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
 
                     t = Thread(target=ctrc)
                     t.start()
-                    bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                        threaded=False
-                    )
                     return None
 
     if (n_times > 1) and (n_points < 2) and (n_levels <= 1):
@@ -860,9 +852,6 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
         t = Thread(target=ctrc)
         t.start()
 
-        bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-            threaded=False
-        )
         return None
 
     if (n_points > 1) and (n_levels >= 1) and (type(vars) is list):
@@ -929,9 +918,6 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
 
         t = Thread(target=ctrc)
         t.start()
-        bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-            threaded=False
-        )
         return None
 
     if n_points > 1:
@@ -1039,9 +1025,6 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
 
             t = Thread(target=ctrc)
             t.start()
-            bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                threaded=False
-            )
             return None
 
         else:
@@ -1135,9 +1118,6 @@ def view(x, vars=None, autoscale=True, out=None, server = None, **kwargs):
 
             t = Thread(target=ctrc)
             t.start()
-            bokeh_server = pn.panel(intplot, sizing_mode="stretch_both").show(
-                threaded=False
-            )
 
             return None
 
