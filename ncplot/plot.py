@@ -247,12 +247,11 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
 
     coord_list = list(ds.coords)
 
-    #if vars is None:
-        #vars = [x for x in list(ds.data_vars) if x not in coord_list]
-    
-
 
     for cc in coord_list:
+        new_coords = list(ds.coords)
+        if cc not in new_coords:
+            continue
         if len(ds[cc].values.ravel()) <= 1:
             if cc in list(ds.dims):
                 ds = ds.squeeze(cc, drop=True)
