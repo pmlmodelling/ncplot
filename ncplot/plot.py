@@ -482,11 +482,15 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
 
     coord_list = list(ds.coords)
 
+    
     for cc in coord_list:
+        new_coords = list(ds.coords)
+        if cc not in new_coords:
+            continue
         if len(ds[cc].values.ravel()) <= 1:
             if cc in list(ds.dims):
                 ds = ds.squeeze(cc, drop=True)
-
+                
     coord_list = list(ds.coords)
 
     coord_list = [x for x in coord_list if x in list(ds.dims)]
