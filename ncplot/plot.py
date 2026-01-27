@@ -495,7 +495,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
     coord_list = [x for x in coord_list if x in list(ds.dims)]
 
     coord_df = pd.DataFrame(
-        {"coord": coord_list, "length": [len(ds.coords[x].values) for x in coord_list]}
+        {"coord": coord_list, "coord_length": [len(ds.coords[x].values) for x in coord_list]}
     )
 
     # It's possible there are still 2 time variables in the dimensions which could cause problems...
@@ -515,7 +515,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
             if (len(ds[lon_name].values) > 1) and (len(ds[lat_name].values) > 1):
                 spatial_map = True
 
-    if len([x for x in coord_df.length if x > 1]) == 1 and spatial_map is False:
+    if len([x for x in coord_df.coord_length if x > 1]) == 1 and spatial_map is False:
 
         df = ds.to_dataframe()
         if nc_vars is not None:
@@ -556,12 +556,11 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         return None
 
     # heat map where 2 coords have more than 1 value, not a spatial map
-    if len([x for x in coord_df.length if x > 1]) == 2 and spatial_map is False:
+    if len([x for x in coord_df.coord_length if x > 1]) == 2 and spatial_map is False:
 
         df = ds.to_dataframe().reset_index()
-        x_var = coord_df.query("length > 1").reset_index().coord[0]
-        y_var = coord_df.query("length > 1").reset_index().coord[1]
-
+        x_var = coord_df.query("coord_length > 1").reset_index().coord[0]
+        y_var = coord_df.query("coord_length > 1").reset_index().coord[1]
         selection = [x for x in df.columns if x in vars or x == x_var or x == y_var]
 
         df = df.loc[:, selection].melt([x_var, y_var]).drop_duplicates()
@@ -696,18 +695,18 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
             return None
 
     # heat map where 3 coords have more than 1 value, and one of them is time. Not a spatial map though
-    if len([x for x in coord_df.length if x > 1]) == 3:
+    if len([x for x in coord_df.coord_length if x > 1]) == 3:
 
         non_map = True
 
         if lon_name is not None and lat_name is not None:
             if (lon_name is not None) and (lon_name in list(ds.coords)):
-                lons = int(coord_df.query("coord == @lon_name").length)
+                lons = int(coord_df.query("coord == @lon_name").coord_length.values[0])
             else:
                 lons = 0
 
             if (lat_name) is not None and (lat_name in list(ds.coords)):
-                lats = int(coord_df.query("coord == @lat_name").length)
+                lats = int(coord_df.query("coord == @lat_name").coord_length.values[0])
             else:
                 lats = 0
 
@@ -725,7 +724,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
 
         if time_name in coord_list and time_in and non_map:
 
-            if coord_df.query("coord == @time_name").length.values > 1:
+            if coord_df.query("coord == @time_name").coord_length.values[0] > 1:
 
                 df = ds.to_dataframe().reset_index()
                 for x in list(ds.coords):
