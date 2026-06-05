@@ -2,6 +2,7 @@ import sys
 import warnings
 from threading import Thread
 
+import glob
 import time
 import holoviews as hv
 import panel as pn
@@ -165,6 +166,172 @@ def in_notebook(out=None):
     return "ipykernel" in sys.modules
 
 
+def _looks_like_time_coord(coord, coord_name):
+    """
+    Check whether a coordinate is likely to represent time.
+    """
+
+    if coord_name is None:
+        return False
+
+    if coord_name == "time" or coord_name.startswith("time"):
+        return True
+
+    if "time" in coord_name:
+        return True
+
+    if coord.attrs.get("standard_name") == "time":
+        return True
+
+    if coord.attrs.get("axis") == "T":
+        return True
+
+    if np.issubdtype(coord.dtype, np.datetime64):
+        return True
+
+    values = coord.values
+    if len(values) > 0:
+        first_value = values.ravel()[0]
+        if hasattr(first_value, "year") and hasattr(first_value, "month"):
+            return True
+
+    return False
+
+
+def _find_time_coord(ds):
+    """
+    Identify the most likely time coordinate name for a dataset.
+    """
+
+    df_dims = get_dims(ds)
+    time_name = df_dims.time[0]
+
+    if time_name is not None:
+        return time_name
+
+    time_candidates = []
+    for coord_name in list(ds.coords):
+        coord = ds[coord_name]
+        if _looks_like_time_coord(coord, coord_name):
+            time_candidates.append(coord_name)
+
+    if len(time_candidates) == 1:
+        return time_candidates[0]
+
+    return None
+
+
+def _combine_datasets(datasets):
+    """
+    Combine multiple datasets by time or by variables.
+    """
+
+    if len(datasets) == 1:
+        return datasets[0]
+
+    normalized = []
+    for ds in datasets:
+        time_name = _find_time_coord(ds)
+        if time_name is not None and time_name != "time":
+            ds = ds.rename({time_name: "time"})
+        normalized.append(ds)
+
+    try:
+        return xr.combine_by_coords(normalized)
+    except Exception:
+        try:
+            return xr.merge(normalized, compat="override")
+        except Exception:
+            return xr.concat(normalized, dim="time")
+
+
+def _normalize_time_coord(ds):
+    """
+    Normalize detected time coordinate names to ``time``.
+    """
+
+    time_name = _find_time_coord(ds)
+    if time_name is not None and time_name != "time":
+        return ds.rename({time_name: "time"})
+
+    return ds
+
+
+def _open_multiple_files(files):
+    """
+    Open multiple files into one dataset.
+
+    This uses ``open_mfdataset`` first, then falls back to manual per-file
+    opening and combining if xarray cannot infer a valid combine strategy.
+    """
+
+    try:
+        return xr.open_mfdataset(
+            files,
+            combine="by_coords",
+            preprocess=_normalize_time_coord,
+        )
+    except Exception:
+        datasets = [xr.open_dataset(ff) for ff in files]
+        return _combine_datasets(datasets)
+
+
+def _load_input_as_dataset(x):
+    """
+    Load a path, path glob, or sequence of paths into a single dataset.
+    """
+
+    if isinstance(x, (list, tuple, set)):
+        files = [os.fspath(ff) for ff in x]
+        return _open_multiple_files(files)
+
+    if isinstance(x, str) and glob.has_magic(x):
+        files = sorted(glob.glob(x))
+        if len(files) == 0:
+            raise FileNotFoundError(f"No files matched pattern {x}")
+        return _open_multiple_files(files)
+
+    return None
+
+
+def _get_color_limits(ds, vars, kwargs):
+    """
+    Work out the value range to use for a plot.
+
+    For time-varying plots, this is evaluated across the full dataset so the
+    color scale stays consistent between time steps.
+    """
+
+    if "clim" in kwargs:
+        clim_min, clim_max = kwargs["clim"]
+        if clim_min < 0 < clim_max:
+            v_max = float(max(-clim_min, clim_max))
+            return (-v_max, v_max)
+
+        return (float(clim_min), float(clim_max))
+
+    data = ds[vars]
+    data_min = float(data.min(skipna=True).values)
+    data_max = float(data.max(skipna=True).values)
+
+    if data_min < 0 < data_max:
+        v_max = float(max(-data_min, data_max))
+        return (-v_max, v_max)
+
+    return (data_min, data_max)
+
+
+def _apply_color_limits(plot, ds, vars, autoscale, kwargs):
+    """
+    Apply a stable color range to a plot when autoscaling is enabled.
+    """
+
+    if autoscale:
+        return plot.redim.range(**{vars: _get_color_limits(ds, vars, kwargs)})
+
+    return plot
+
+
 def view(x, vars=None, autoscale=True, out=None, **kwargs):
     """
     Plot the contents of a NetCDF out
@@ -208,6 +375,10 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
         kwargs.pop("coast")
     if type(x) is xr.core.dataarray.DataArray:
         x = x.to_dataset()
+
+    loaded_ds = _load_input_as_dataset(x)
+    if loaded_ds is not None:
+        x = loaded_ds
 
     if type(x) is xr.core.dataset.Dataset:
         xr_file = True
@@ -963,7 +1134,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         #responsive=(in_notebook() is False),
                         responsive = False,
                         **kwargs,
-                    ).redim.range(**{vars: (-v_max, v_max)})
+                    )
+                    intplot = _apply_color_limits(intplot, ds, vars, autoscale, kwargs)
                 else:
                     intplot = ds.hvplot.quadmesh(
                         lon_name,
@@ -978,6 +1150,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         responsive = False,
                         **kwargs,
                     )
+                    intplot = _apply_color_limits(intplot, ds, vars, autoscale, kwargs)
             else:
                 if coastline:
                     coastline = get_coastline(ds, lon_name, lat_name)
@@ -1002,7 +1175,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         #responsive=(in_notebook() is False),
                         responsive = False,
                         **kwargs,
-                    ).redim.range(**{vars: (-v_max, v_max)})
+                    )
+                    intplot = _apply_color_limits(intplot, ds, vars, autoscale, kwargs)
                 else:
                     intplot = ds.hvplot.image(
                         lon_name,
@@ -1054,7 +1228,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         #responsive=(in_notebook() is False),
                         responsive = False,
                         **kwargs,
-                    ).redim.range(**{vars: (self_min.values, v_max)})
+                    )
+                    intplot = _apply_color_limits(intplot, ds, vars, autoscale, kwargs)
                 else:
                     intplot = ds.hvplot.quadmesh(
                         lon_name,
@@ -1069,6 +1244,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         responsive = False,
                         **kwargs,
                     )
+                    intplot = _apply_color_limits(intplot, ds, vars, autoscale, kwargs)
 
             else:
 
@@ -1095,7 +1271,8 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         #responsive=(in_notebook() is False),
                         responsive = False,
                         **kwargs,
-                    ).redim.range(**{vars: (self_min.values, v_max)})
+                    )
+                    intplot = _apply_color_limits(intplot, ds, vars, autoscale, kwargs)
                 else:
                     intplot = ds.hvplot.image(
                         lon_name,
@@ -1110,6 +1287,7 @@ def view(x, vars=None, autoscale=True, out=None, **kwargs):
                         responsive = False,
                         **kwargs,
                     )
+                    intplot = _apply_color_limits(intplot, ds, vars, autoscale, kwargs)
 
             if in_notebook(out):
                 if out is None:
