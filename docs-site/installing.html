@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Installing — NCPlot</title>
+<meta name="description" content="Install NCPlot from conda-forge or pip, or set up the development version from GitHub.">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="assets/img/ncplot_wordmark.svg" alt="NCPlot">
+      <span id="ncplot-docs-version" class="brand-version">v&hellip;</span>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="installing.html" data-page="installing.html">Install</a>
+      <a href="quickstart.html" data-page="quickstart.html">Quickstart</a>
+      <a href="api.html" data-page="api.html">API</a>
+      <a href="about.html" data-page="about.html">About</a>
+      <a href="version-history.html" data-page="version-history.html">Version history</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="icon-btn" href="https://github.com/pmlmodelling/ncplot" target="_blank" rel="noopener" aria-label="NCPlot on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 .5C5.73.5.5 5.74.5 12.09c0 5.08 3.29 9.38 7.86 10.9.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.71 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.44-2.7 5.42-5.28 5.7.42.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A10.6 10.6 0 0 0 23.5 12.1C23.5 5.74 18.27.5 12 .5Z"/></svg>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<div class="page-hero">
+  <div class="container">
+    <div class="breadcrumb"><a href="index.html">Home</a> / Installing</div>
+    <h1>Installation and a quick example</h1>
+  </div>
+</div>
+
+<div class="container docs-layout">
+  <aside class="docs-toc">
+    <div class="docs-toc-title">On this page</div>
+    <ul>
+      <li><a href="#conda">Install with conda or mamba</a></li>
+      <li><a href="#pip">Install with pip</a></li>
+      <li><a href="#dev">Development version</a></li>
+      <li><a href="#example">A two-minute example</a></li>
+    </ul>
+  </aside>
+
+  <div class="docs-content">
+    <h2 id="conda">Install with conda or mamba</h2>
+    <p>The best way to install NCPlot is with conda or mamba — this pulls in <a href="https://scitools.org.uk/cartopy/docs/latest/" target="_blank" rel="noopener">cartopy</a> automatically, which some plots use for coastlines and map projections.</p>
+    <div class="code-block">
+      <div class="code-card__bar">
+        <div class="code-card__dots"><span></span><span></span><span></span></div>
+        <span class="code-card__label">console</span>
+      </div>
+      <pre>conda install -c conda-forge ncplot
+mamba install -c conda-forge ncplot</pre>
+    </div>
+
+    <h2 id="pip">Install with pip</h2>
+    <p>Install the stable release from PyPI:</p>
+    <div class="code-block">
+      <div class="code-card__bar">
+        <div class="code-card__dots"><span></span><span></span><span></span></div>
+        <span class="code-card__label">console</span>
+      </div>
+      <pre>pip install ncplot</pre>
+    </div>
+    <div class="callout">
+      <div class="callout-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+        Note
+      </div>
+      <p>The PyPI package does not include the optional <code>cartopy</code> dependency. Some plots will look better with it installed — see the <a href="https://scitools.org.uk/cartopy/docs/latest/installing.html" target="_blank" rel="noopener">cartopy installation guide</a> if you install via pip.</p>
+    </div>
+
+    <h2 id="dev">Development version</h2>
+    <p>Install the latest development version directly from GitHub:</p>
+    <div class="code-block">
+      <div class="code-card__bar">
+        <div class="code-card__dots"><span></span><span></span><span></span></div>
+        <span class="code-card__label">console</span>
+      </div>
+      <pre>pip install git+https://github.com/pmlmodelling/ncplot.git</pre>
+    </div>
+
+    <h2 id="example">A two-minute example</h2>
+    <p>Once installed, plotting a NetCDF file is a single function call. This example plots sea surface temperature from NOAA's COBE2 dataset, streamed directly from a remote OPeNDAP server — no download required:</p>
+    <div class="code-block">
+      <div class="code-card__bar">
+        <div class="code-card__dots"><span></span><span></span><span></span></div>
+        <span class="code-card__label">python</span>
+        <button class="code-card__copy" data-copy-target="#example-code">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          <span class="copy-label">Copy</span>
+        </button>
+      </div>
+      <pre id="example-code"><span class="tok-kw">from</span> ncplot <span class="tok-kw">import</span> view
+
+url = <span class="tok-str">"https://psl.noaa.gov/thredds/dodsC/Datasets/COBE2/sst.mon.ltm.1981-2010.nc"</span>
+
+<span class="tok-fn">view</span>(url, vars=<span class="tok-str">"sst"</span>, coast=<span class="tok-kw">True</span>)</pre>
+    </div>
+    <p>This opens an interactive plot of sea surface temperature in your notebook or browser, with coastlines drawn in. Continue with the <a href="quickstart.html">quickstart</a> to see the xarray accessor and the command line viewer.</p>
+  </div>
+</div>
+
+<footer class="site-footer">
+  <div class="container footer-pml">
+    <a href="https://pml.ac.uk/" target="_blank" rel="noopener"><img src="assets/img/pml_logo.jpg" alt="Plymouth Marine Laboratory"></a>
+    <span>Developed by the Environmental Intelligence group at Plymouth Marine Laboratory</span>
+  </div>
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <img src="assets/img/ncplot_wordmark.svg" alt="NCPlot">
+      <p>Instant, interactive viewing of NetCDF files in Python or on the command line.</p>
+      <div class="footer-social">
+        <a href="https://github.com/pmlmodelling/ncplot" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 .5C5.73.5.5 5.74.5 12.09c0 5.08 3.29 9.38 7.86 10.9.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.71 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.44-2.7 5.42-5.28 5.7.42.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A10.6 10.6 0 0 0 23.5 12.1C23.5 5.74 18.27.5 12 .5Z"/></svg>
+        </a>
+        <a href="mailto:rwi@pml.ac.uk" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Documentation</h4>
+      <ul>
+        <li><a href="installing.html">Installing</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="api.html">API reference</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Project</h4>
+      <ul>
+        <li><a href="about.html">About &amp; contact</a></li>
+        <li><a href="version-history.html">Version history</a></li>
+        <li><a href="https://github.com/pmlmodelling/ncplot" target="_blank" rel="noopener">GitHub repository</a></li>
+        <li><a href="https://github.com/pmlmodelling/ncplot/issues" target="_blank" rel="noopener">Report an issue</a></li>
+        <li><a href="https://pypi.org/project/ncplot/" target="_blank" rel="noopener">PyPI package</a></li>
+        <li><a href="https://anaconda.org/conda-forge/ncplot" target="_blank" rel="noopener">conda-forge package</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Plymouth Marine Laboratory. Released under the GNU GPLv3 license.</span>
+    <span>Built for quick, no-fuss NetCDF viewing.</span>
+  </div>
+</footer>
+
+<button class="back-to-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>

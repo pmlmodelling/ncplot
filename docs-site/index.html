@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCPlot — Instant Interactive Viewing of NetCDF Files</title>
+<meta name="description" content="NCPlot is a Python package that automatically plots the contents of NetCDF files and xarray datasets — interactively, in a notebook, a browser, or straight from the command line, in a single line of code.">
+<link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+<header class="site-header">
+  <div class="container nav">
+    <a class="brand" href="index.html">
+      <img src="assets/img/ncplot_wordmark.svg" alt="NCPlot">
+      <span id="ncplot-docs-version" class="brand-version">v&hellip;</span>
+    </a>
+    <nav class="nav-links" id="nav-links">
+      <a href="installing.html" data-page="installing.html">Install</a>
+      <a href="quickstart.html" data-page="quickstart.html">Quickstart</a>
+      <a href="api.html" data-page="api.html">API</a>
+      <a href="about.html" data-page="about.html">About</a>
+      <a href="version-history.html" data-page="version-history.html">Version history</a>
+    </nav>
+    <div class="nav-actions">
+      <a class="icon-btn" href="https://github.com/pmlmodelling/ncplot" target="_blank" rel="noopener" aria-label="NCPlot on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 .5C5.73.5.5 5.74.5 12.09c0 5.08 3.29 9.38 7.86 10.9.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.71 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.44-2.7 5.42-5.28 5.7.42.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A10.6 10.6 0 0 0 23.5 12.1C23.5 5.74 18.27.5 12 .5Z"/></svg>
+      </a>
+      <button class="nav-toggle" id="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+    </div>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container hero-grid">
+    <div>
+      <h1>Explore NetCDF data, <em>without the busywork</em></h1>
+      <p class="hero-sub">Point NCPlot at a NetCDF file, an OPeNDAP URL, or an xarray dataset. It works out the variables, dimensions and coordinates for you, and builds an interactive plot — in a notebook, a browser, or straight from the terminal.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="installing.html">
+          Get started
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+        <a class="btn btn-ghost" href="quickstart.html">
+          See it on the command line
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
+        </a>
+      </div>
+      <ul class="hero-points">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Works with any CF-compliant NetCDF file, local or remote</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Automatically picks the right plot for each variable</span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>One line of code: <code>view("file.nc")</code></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Native xarray accessor: <code>ds.ncplot.view()</code></span>
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          <span>Command line viewer: <code>ncplot file.nc</code></span>
+        </li>
+      </ul>
+    </div>
+    <div class="hero-panel">
+      <div class="code-card">
+        <div class="code-card__bar">
+          <div class="code-card__dots"><span></span><span></span><span></span></div>
+          <span class="code-card__label">view.py</span>
+          <button class="code-card__copy" data-copy-target="#hero-code">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+            <span class="copy-label">Copy</span>
+          </button>
+        </div>
+        <pre id="hero-code"><span class="tok-kw">from</span> ncplot <span class="tok-kw">import</span> view
+
+<span class="tok-fn">view</span>(
+    <span class="tok-str">"https://psl.noaa.gov/thredds/dodsC/Datasets/COBE2/sst.mon.ltm.1981-2010.nc"</span>,
+    vars=<span class="tok-str">"sst"</span>,
+    coast=<span class="tok-kw">True</span>,
+)  <span class="tok-com"># -> an interactive map, no other setup needed</span></pre>
+      </div>
+    </div>
+  </div>
+  <div class="wave-divider">
+    <svg viewBox="0 0 1440 110" preserveAspectRatio="none">
+      <path fill="#ffffff" d="M0,64 C240,110 480,10 720,40 C960,70 1200,110 1440,56 L1440,110 L0,110 Z"></path>
+    </svg>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">How it works</span>
+      <h2>Point, plot, explore</h2>
+      <p>NCPlot turns viewing a NetCDF file into a single function call, so you spend time looking at your data instead of writing plotting code.</p>
+    </div>
+    <div class="steps">
+      <div class="step-card">
+        <span class="step-num">1</span>
+        <h3>Point at a file</h3>
+        <p>A local path, an OPeNDAP/THREDDS URL, a directory of files, or an already-open xarray <code>Dataset</code>/<code>DataArray</code>.</p>
+        <span class="step-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+      </div>
+      <div class="step-card">
+        <span class="step-num">2</span>
+        <h3>Plot with <a href="api.html#view"><code>view()</code></a></h3>
+        <p>NCPlot inspects each variable's dimensions and coordinates and picks a sensible plot automatically — map, cross-section, or time series.</p>
+        <span class="step-arrow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg></span>
+      </div>
+      <div class="step-card">
+        <span class="step-num">3</span>
+        <h3>Explore interactively</h3>
+        <p>Pan, zoom and read off values in your notebook or browser, or save the result as a shareable, self-contained HTML file.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Why NCPlot</span>
+      <h2>Everything you need to look at NetCDF data, fast</h2>
+      <p>Built for anyone who just wants to see what's inside a NetCDF file — so the defaults are sensible and nothing needs configuring first.</p>
+    </div>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></div>
+        <h3>Zero configuration</h3>
+        <p>Install from conda-forge or pip and plot your first file the same minute — no setup, no boilerplate.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg></div>
+        <h3>Works with any CF-compliant NetCDF</h3>
+        <p>Local files, directories of files, or remote OPeNDAP/THREDDS URLs — NCPlot reads them all the same way.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg></div>
+        <h3>Automatic plot selection</h3>
+        <p>Maps, vertical sections and time series are chosen based on each variable's dimensions — no chart type to pick.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></div>
+        <h3>Native xarray integration</h3>
+        <p>Register the accessor once and call <code>ds.ncplot.view()</code> or <code>da.ncplot.view()</code>, just like xarray's own <code>.plot()</code>.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></div>
+        <h3>Command line viewer</h3>
+        <p><code>ncplot file.nc</code> opens an interactive view straight from the terminal — no Python session required.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <h3>Shareable HTML output</h3>
+        <p>Pass <code>out="figure.html"</code> to save any plot as a self-contained file you can send to a colleague.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="preview-panel">
+      <div>
+        <span class="kicker">See it in action</span>
+        <h2>An interactive plot in one function call</h2>
+        <p>Every <a href="api.html#view"><code>view()</code></a> call inspects the file or dataset you give it, decides how best to represent each variable, and renders an interactive, pannable, zoomable plot — in a notebook cell, a browser tab, or embedded in an HTML report.</p>
+        <a class="btn btn-outline" href="quickstart.html">
+          Read the quickstart
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+      <div class="browser-mock">
+        <div class="browser-mock__bar">
+          <span></span><span></span><span></span>
+          <div class="browser-mock__url">sst.mon.ltm.1981-2010.nc — view()</div>
+        </div>
+        <div class="browser-mock__body">
+          <div class="fake-title"></div>
+          <div class="mock-stat-row">
+            <div class="mock-stat"><span>Variable</span><strong>sst</strong></div>
+            <div class="mock-stat"><span>Dims</span><strong>lat, lon</strong></div>
+            <div class="mock-stat"><span>Coastlines</span><strong>on</strong></div>
+          </div>
+          <div class="mock-chart">
+            <svg viewBox="0 0 400 130" preserveAspectRatio="none">
+              <polyline points="0,90 40,70 80,85 120,50 160,60 200,30 240,45 280,25 320,40 360,20 400,35" fill="none" stroke="#087f8c" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="0,100 40,95 80,100 120,80 160,88 200,65 240,75 280,58 320,68 360,52 400,60" fill="none" stroke="#d76b45" stroke-width="2.5" stroke-dasharray="5 5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="sample">
+      <div class="code-card">
+        <div class="code-card__bar">
+          <div class="code-card__dots"><span></span><span></span><span></span></div>
+          <span class="code-card__label">terminal</span>
+        </div>
+        <pre><span class="tok-com"># install</span>
+conda install -c conda-forge ncplot
+
+<span class="tok-com"># view every variable in a file, from Python...</span>
+<span class="tok-kw">from</span> ncplot <span class="tok-kw">import</span> view
+<span class="tok-fn">view</span>(<span class="tok-str">"example.nc"</span>)
+
+<span class="tok-com"># ...or straight from the command line</span>
+ncplot example.nc</pre>
+      </div>
+      <div>
+        <span class="kicker">Get started in minutes</span>
+        <h2>From raw NetCDF to an interactive plot</h2>
+        <p>Works from Python, a Jupyter notebook, the xarray accessor, or the terminal — pick whichever fits how you already work with your data. No project setup, no configuration file.</p>
+        <ul>
+          <li>Plot a single variable or everything in a file.</li>
+          <li>Multi-file and time-aware datasets are supported directly.</li>
+          <li>Optional coastlines and geographic projections via cartopy.</li>
+        </ul>
+        <a class="btn btn-primary" href="installing.html">
+          Install NCPlot
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section section-tight">
+  <div class="container">
+    <div class="cta-banner">
+      <h2>Ready to see what's inside your NetCDF file?</h2>
+      <p>Install NCPlot from conda-forge or pip, and go from a file path to an interactive plot in one line.</p>
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="installing.html">Install NCPlot</a>
+        <a class="btn btn-ghost" href="https://github.com/pmlmodelling/ncplot" target="_blank" rel="noopener">Star on GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="site-footer">
+  <div class="container footer-pml">
+    <a href="https://pml.ac.uk/" target="_blank" rel="noopener"><img src="assets/img/pml_logo.jpg" alt="Plymouth Marine Laboratory"></a>
+    <span>Developed by the Environmental Intelligence group at Plymouth Marine Laboratory</span>
+  </div>
+  <div class="container footer-top">
+    <div class="footer-brand">
+      <img src="assets/img/ncplot_wordmark.svg" alt="NCPlot">
+      <p>Instant, interactive viewing of NetCDF files in Python or on the command line.</p>
+      <div class="footer-social">
+        <a href="https://github.com/pmlmodelling/ncplot" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M12 .5C5.73.5.5 5.74.5 12.09c0 5.08 3.29 9.38 7.86 10.9.57.1.79-.25.79-.55 0-.27-.01-1.17-.02-2.12-3.2.7-3.88-1.36-3.88-1.36-.53-1.34-1.29-1.7-1.29-1.7-1.05-.72.08-.71.08-.71 1.17.08 1.78 1.2 1.78 1.2 1.03 1.77 2.71 1.26 3.37.96.1-.75.4-1.26.73-1.55-2.56-.29-5.26-1.28-5.26-5.71 0-1.26.45-2.29 1.19-3.09-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11.1 11.1 0 0 1 5.79 0c2.2-1.49 3.17-1.18 3.17-1.18.64 1.59.24 2.76.12 3.05.74.8 1.18 1.83 1.18 3.09 0 4.44-2.7 5.42-5.28 5.7.42.36.78 1.08.78 2.17 0 1.57-.01 2.83-.01 3.22 0 .3.21.66.8.55A10.6 10.6 0 0 0 23.5 12.1C23.5 5.74 18.27.5 12 .5Z"/></svg>
+        </a>
+        <a href="mailto:rwi@pml.ac.uk" aria-label="Email">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Documentation</h4>
+      <ul>
+        <li><a href="installing.html">Installing</a></li>
+        <li><a href="quickstart.html">Quickstart</a></li>
+        <li><a href="api.html">API reference</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Project</h4>
+      <ul>
+        <li><a href="about.html">About &amp; contact</a></li>
+        <li><a href="version-history.html">Version history</a></li>
+        <li><a href="https://github.com/pmlmodelling/ncplot" target="_blank" rel="noopener">GitHub repository</a></li>
+        <li><a href="https://github.com/pmlmodelling/ncplot/issues" target="_blank" rel="noopener">Report an issue</a></li>
+        <li><a href="https://pypi.org/project/ncplot/" target="_blank" rel="noopener">PyPI package</a></li>
+        <li><a href="https://anaconda.org/conda-forge/ncplot" target="_blank" rel="noopener">conda-forge package</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="container footer-bottom">
+    <span>© 2026 Plymouth Marine Laboratory. Released under the GNU GPLv3 license.</span>
+    <span>Built for quick, no-fuss NetCDF viewing.</span>
+  </div>
+</footer>
+
+<button class="back-to-top" aria-label="Back to top">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+</button>
+
+<script src="assets/js/main.js"></script>
+</body>
+</html>
