@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Installing — NCPlot</title>
-<meta name="description" content="Install NCPlot from conda-forge or pip, or set up the development version from GitHub.">
+<meta name="description" content="Install NCPlot from conda-forge or pip, and see a two-minute example.">
 <link rel="icon" type="image/svg+xml" href="assets/img/favicon.svg">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -48,23 +48,21 @@
   <aside class="docs-toc">
     <div class="docs-toc-title">On this page</div>
     <ul>
-      <li><a href="#conda">Install with conda or mamba</a></li>
+      <li><a href="#conda">Install with conda</a></li>
       <li><a href="#pip">Install with pip</a></li>
-      <li><a href="#dev">Development version</a></li>
       <li><a href="#example">A two-minute example</a></li>
     </ul>
   </aside>
 
   <div class="docs-content">
-    <h2 id="conda">Install with conda or mamba</h2>
-    <p>The best way to install NCPlot is with conda or mamba — this pulls in <a href="https://scitools.org.uk/cartopy/docs/latest/" target="_blank" rel="noopener">cartopy</a> automatically, which some plots use for coastlines and map projections.</p>
+    <h2 id="conda">Install with conda</h2>
+    <p>The best way to install NCPlot is with conda — this pulls in <a href="https://scitools.org.uk/cartopy/docs/latest/" target="_blank" rel="noopener">cartopy</a> automatically, which some plots use for coastlines and map projections.</p>
     <div class="code-block">
       <div class="code-card__bar">
         <div class="code-card__dots"><span></span><span></span><span></span></div>
         <span class="code-card__label">console</span>
       </div>
-      <pre>conda install -c conda-forge ncplot
-mamba install -c conda-forge ncplot</pre>
+      <pre>conda install -c conda-forge ncplot</pre>
     </div>
 
     <h2 id="pip">Install with pip</h2>
@@ -82,16 +80,6 @@ mamba install -c conda-forge ncplot</pre>
         Note
       </div>
       <p>The PyPI package does not include the optional <code>cartopy</code> dependency. Some plots will look better with it installed — see the <a href="https://scitools.org.uk/cartopy/docs/latest/installing.html" target="_blank" rel="noopener">cartopy installation guide</a> if you install via pip.</p>
-    </div>
-
-    <h2 id="dev">Development version</h2>
-    <p>Install the latest development version directly from GitHub:</p>
-    <div class="code-block">
-      <div class="code-card__bar">
-        <div class="code-card__dots"><span></span><span></span><span></span></div>
-        <span class="code-card__label">console</span>
-      </div>
-      <pre>pip install git+https://github.com/pmlmodelling/ncplot.git</pre>
     </div>
 
     <h2 id="example">A two-minute example</h2>
